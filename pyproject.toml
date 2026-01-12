@@ -1,0 +1,26 @@
+[project]
+name = "glm"
+version = "0.1.0"
+description = "Code for the paper 'Improving the Generalisation of Learned Reconstruction Frameworks."
+readme = "README.md"
+authors = [
+    { name = "emilien", email = "emilienvalat@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "astra-toolbox>=2.4.1",
+    "imageio>=2.37.2",
+    "odl",
+    "torch>=2.9.1",
+    "torch-geometric>=2.7.0",
+]
+
+[project.scripts]
+glm = "glm:main"
+
+[build-system]
+requires = ["uv_build>=0.9.22,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+odl = { git = "https://github.com/Emvlt/odl", rev = "GLM" }
