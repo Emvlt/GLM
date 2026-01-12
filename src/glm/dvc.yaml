@@ -1,0 +1,7 @@
+stages:
+  preprocess:
+    cmd: uv run python preprocess_2detect.py Mode2
+    deps:
+    - preprocess_2detect.py
+    outs:
+    - datasets/processed/2detect

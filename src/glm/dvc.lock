@@ -1,0 +1,15 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: uv run python preprocess_2detect.py Mode2
+    deps:
+    - path: preprocess_2detect.py
+      hash: md5
+      md5: bc544e4b1d9744ab95ce5d25f33475ea
+      size: 1744
+    outs:
+    - path: datasets/processed/2detect
+      hash: md5
+      md5: a98d5a6c564272c8ad59219e86a5a5db.dir
+      size: 31727360
+      nfiles: 2
