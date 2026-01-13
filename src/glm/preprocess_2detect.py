@@ -38,7 +38,7 @@ def loop_over_dataset(
             np.save(path_to_processed, reconstruction)
 
 def main():
-    if len(sys.argv) != 1:
+    if len(sys.argv) != 3:
         sys.stderr.write("Arguments error. Usage:\n")
         sys.stderr.write("\tpython preprocess_2detect.py mode task \n")
         sys.exit(1)
