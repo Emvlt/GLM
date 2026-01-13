@@ -1,0 +1,3 @@
+demo:
+  raw_path: "src/glm/datasets/raw/2detect"
+  processed_path : "src/glm/datasets/processed/2detect"

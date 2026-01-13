@@ -1,0 +1,22 @@
+stages:
+  prepare_demo:
+      cmd: uv run python src/glm/preprocess_2detect_demo.py 
+      deps:
+        - src/glm/preprocess_2detect_demo.py 
+        - src/glm/datasets/raw/2detect
+      params:
+        - demo
+      outs:
+        - src/glm/datasets/processed/2detect
+
+  run_demo:
+      cmd: uv run python src/glm/run_demo.py
+      deps:
+        - src/glm/run_demo.py 
+        - src/glm/datasets/processed/2detect
+      params:
+        - demo
+      outs:
+        - src/glm/images/demo/reconstruction.jpg
+        - src/glm/images/demo/sinogram.jpg
+        - src/glm/images/demo/target.jpg

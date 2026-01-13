@@ -23,3 +23,33 @@ stages:
       md5: 714c75e736e98e6bc7d0dc4f76f59684.dir
       size: 31727360
       nfiles: 2
+  run_demo:
+    cmd: uv run python src/glm/run_demo.py
+    deps:
+    - path: src/glm/datasets/processed/2detect
+      hash: md5
+      md5: 714c75e736e98e6bc7d0dc4f76f59684.dir
+      size: 31727360
+      nfiles: 2
+    - path: src/glm/run_demo.py
+      hash: md5
+      md5: 73c52959d18624ec903429bd16dd3bd6
+      size: 1766
+    params:
+      params.yaml:
+        demo:
+          raw_path: src/glm/datasets/raw/2detect
+          processed_path: src/glm/datasets/processed/2detect
+    outs:
+    - path: src/glm/images/demo/reconstruction.jpg
+      hash: md5
+      md5: adabdd0eaeb774cc657f8dcf94463ce4
+      size: 19440
+    - path: src/glm/images/demo/sinogram.jpg
+      hash: md5
+      md5: d4dc6bc5c72eb4a1ab531d8b3a4b56d3
+      size: 44615
+    - path: src/glm/images/demo/target.jpg
+      hash: md5
+      md5: e5f2c9ec0db9eba50b26030098d442cd
+      size: 21199
