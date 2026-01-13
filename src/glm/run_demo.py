@@ -19,7 +19,7 @@ def main():
         sys.exit(1)
 
     parameters = yaml.safe_load(open("params.yaml"))
-    processed_path = pathlib.Path(parameters['demo']['processed_path'])
+    processed_path = pathlib.Path(parameters['demo']['data']['processed_path'])
 
     ray_transform = detect_ray_trafo(impl='numpy', device='cpu')
 
