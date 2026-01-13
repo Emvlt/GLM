@@ -2,7 +2,7 @@ stages:
   prepare_demo:
       cmd: uv run python src/glm/preprocess_2detect.py mode2 demo
       deps:
-        - src/glm/preprocess_2detect_demo.py 
+        - src/glm/preprocess_2detect.py 
         - src/glm/datasets/raw/2detect
       params:
         - demo

@@ -1,22 +1,23 @@
 schema: '2.0'
 stages:
   prepare_demo:
-    cmd: uv run python src/glm/preprocess_2detect_demo.py
+    cmd: uv run python src/glm/preprocess_2detect.py mode2 demo
     deps:
     - path: src/glm/datasets/raw/2detect
       hash: md5
       md5: 67e7e6227a3c83214c1c50fb338e4eea.dir
       size: 19026176
       nfiles: 6
-    - path: src/glm/preprocess_2detect_demo.py
+    - path: src/glm/preprocess_2detect.py
       hash: md5
-      md5: c6144636b32d407d699a3bc6b5ef824d
-      size: 1766
+      md5: 46c8644db13bbf42791894415e2c0f4f
+      size: 2171
     params:
       params.yaml:
         demo:
-          raw_path: src/glm/datasets/raw/2detect
-          processed_path: src/glm/datasets/processed/2detect
+          data:
+            raw_path: src/glm/datasets/raw/2detect
+            processed_path: src/glm/datasets/processed/2detect
     outs:
     - path: src/glm/datasets/processed/2detect
       hash: md5
@@ -33,13 +34,14 @@ stages:
       nfiles: 2
     - path: src/glm/run_demo.py
       hash: md5
-      md5: 73c52959d18624ec903429bd16dd3bd6
-      size: 1766
+      md5: 0c7632f261693f5e63bf8028fdd550cb
+      size: 1774
     params:
       params.yaml:
         demo:
-          raw_path: src/glm/datasets/raw/2detect
-          processed_path: src/glm/datasets/processed/2detect
+          data:
+            raw_path: src/glm/datasets/raw/2detect
+            processed_path: src/glm/datasets/processed/2detect
     outs:
     - path: src/glm/images/demo/reconstruction.jpg
       hash: md5
