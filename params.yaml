@@ -1,3 +1,9 @@
 demo:
-  raw_path: "src/glm/datasets/raw/2detect"
-  processed_path : "src/glm/datasets/processed/2detect"
+  data:
+    raw_path: "src/glm/datasets/raw/2detect"
+    processed_path : "src/glm/datasets/processed/2detect"
+
+train:
+  data:
+    raw_path : "/home/emilien/datasets/raw/2detect"
+    processed_path : "/home/emilien/datasets/processed/2detect"
