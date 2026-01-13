@@ -1,0 +1,25 @@
+schema: '2.0'
+stages:
+  prepare_demo:
+    cmd: uv run python src/glm/preprocess_2detect_demo.py
+    deps:
+    - path: src/glm/datasets/raw/2detect
+      hash: md5
+      md5: 67e7e6227a3c83214c1c50fb338e4eea.dir
+      size: 19026176
+      nfiles: 6
+    - path: src/glm/preprocess_2detect_demo.py
+      hash: md5
+      md5: c6144636b32d407d699a3bc6b5ef824d
+      size: 1766
+    params:
+      params.yaml:
+        demo:
+          raw_path: src/glm/datasets/raw/2detect
+          processed_path: src/glm/datasets/processed/2detect
+    outs:
+    - path: src/glm/datasets/processed/2detect
+      hash: md5
+      md5: 714c75e736e98e6bc7d0dc4f76f59684.dir
+      size: 31727360
+      nfiles: 2
