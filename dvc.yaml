@@ -20,3 +20,26 @@ stages:
         - src/glm/images/demo/reconstruction.jpg
         - src/glm/images/demo/sinogram.jpg
         - src/glm/images/demo/target.jpg
+
+  prepare_training:
+    cmd: uv run python src/glm/preprocess_2detect.py mode2 train
+    deps:
+      - src/glm/preprocess_2detect.py
+      - ${train.data.raw_path}
+    params:
+      - train 
+    outs:
+      - ${train.data.processed_path}:
+          cache: false
+
+  pretraining:
+    cmd: uv run python src/glm/pretrain.py
+    deps:
+      - src/glm/pretrain.py
+      - ${train.data.processed_path}
+    params:
+      - pretrain
+    metrics:
+      - metrics.json
+    outs:
+      - saved_models/pretrained_model.pt
