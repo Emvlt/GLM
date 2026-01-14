@@ -12,7 +12,7 @@ pretrain:
     batch_size: 8
     num_workers: 2
     device: "cuda:0"
-    downsampling: 10
+    downsampling: 1
   active_model: GLM
   models:
     GLM:
