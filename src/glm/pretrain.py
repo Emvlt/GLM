@@ -100,22 +100,22 @@ def pretraining_loop():
                 live.log_metric("pretraining/training/loss", loss.item())
                 live.next_step()
             
-            if index %50==0:
-                plot_image_live(
-                data = infered_sinogram.view(batch_size, n_measurements, 956), 
-                name = 'infered_sinogram',
-                title='Infered Sinogram',
-                extension='jpg',
-                live_session = live
-                )
+                if index %50==0:
+                    plot_image_live(
+                    data = infered_sinogram.view(batch_size, n_measurements, 956), 
+                    name = 'infered_sinogram',
+                    title='Infered Sinogram',
+                    extension='jpg',
+                    live_session = live
+                    )
 
-                plot_image_live(
-                input_sinogram.view(batch_size, n_measurements, 956), 
-                name = 'input_sinogram',
-                title='Input Sinogram',
-                extension='jpg',
-                live_session = live
-                )
+                    plot_image_live(
+                    input_sinogram.view(batch_size, n_measurements, 956), 
+                    name = 'input_sinogram',
+                    title='Input Sinogram',
+                    extension='jpg',
+                    live_session = live
+                    )
 
         validation = []
         with torch.no_grad():
