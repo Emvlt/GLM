@@ -64,7 +64,7 @@ def pretraining_loop():
     model_save_path = Path('src/glm/saved_models/')
     model_save_path.parent.mkdir(exist_ok=True)
 
-    with Live(save_dvc_exp=True) as live:
+    with Live(save_dvc_exp=True, dir="dvclive") as live:
 
         live.log_params(hyperparameters)
 
