@@ -58,10 +58,12 @@ def main():
     task = sys.argv[2]
     accepted_tasks = ['demo', 'train']
     assert task in accepted_tasks, f"Wrong task argument, expected to be in {accepted_tasks}, got {mode}"
-
-    raw_path = pathlib.Path(parameters[task]['data']['raw_path'])
-    processed_path = pathlib.Path(parameters[task]['data']['processed_path'])
-
+    if mode == 'demo':
+        raw_path = pathlib.Path(parameters[task]['data']['raw_path'])
+        processed_path = pathlib.Path(parameters[task]['data']['processed_path'])
+    else:
+        raw_path = pathlib.Path(parameters['data']['raw_path'])
+        processed_path = pathlib.Path(parameters['data']['processed_path'])
     assert raw_path.is_dir(), f'The input raw_path {raw_path} is not a dir.'
 
     loop_over_dataset(raw_path, processed_path, mode)

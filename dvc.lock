@@ -34,8 +34,8 @@ stages:
       nfiles: 2
     - path: src/glm/run_demo.py
       hash: md5
-      md5: 823e9329d6707a6969fb6083ef7ebfff
-      size: 1764
+      md5: e3c7c54289abaddc857cde7017478d21
+      size: 1768
     params:
       params.yaml:
         demo:
@@ -45,16 +45,16 @@ stages:
     outs:
     - path: src/glm/images/demo/reconstruction.jpg
       hash: md5
-      md5: adabdd0eaeb774cc657f8dcf94463ce4
-      size: 19440
+      md5: 4d094a10b9b06e0a7a763ec31622441e
+      size: 17981
     - path: src/glm/images/demo/sinogram.jpg
       hash: md5
-      md5: d4dc6bc5c72eb4a1ab531d8b3a4b56d3
-      size: 44615
+      md5: 9564192459134caa2f0e79440ff057fc
+      size: 41795
     - path: src/glm/images/demo/target.jpg
       hash: md5
-      md5: e5f2c9ec0db9eba50b26030098d442cd
-      size: 21199
+      md5: 3d40d439da4a3c4e4f7cf1ce7a749f74
+      size: 20319
   prepare_training:
     cmd: uv run python src/glm/preprocess_2detect.py mode2 train
     deps:

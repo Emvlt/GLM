@@ -1,19 +1,19 @@
 demo:
   data:
-    raw_path: "src/glm/datasets/raw/2detect"
-    processed_path: "src/glm/datasets/processed/2detect"
+    raw_path: src/glm/datasets/raw/2detect
+    processed_path: src/glm/datasets/processed/2detect
 
 data:
-  raw_path: "/home/emilien/datasets/raw/2detect"
-  processed_path: "/home/emilien/datasets/processed/2detect"
+  raw_path: /home/emilien/datasets/raw/2detect
+  processed_path: /home/emilien/datasets/processed/2detect
 
-pretrain_parameters:  
+pretrain_parameters:
   hyperparameters:
     learning_rate: 5e-4
     epochs: 1
     batch_size: 8
     num_workers: 2
-    device: "cuda:0"
+    device: cuda:0
     downsampling: 1
   active_model: GLM
   models:
@@ -28,7 +28,7 @@ pretrain_parameters:
       improved: true
       cached: true
       add_self_loops: true
-      aggr: "add"
+      aggr: add
     sinogram_CNN:
       # CNN parameters
       kernel_size: 7
