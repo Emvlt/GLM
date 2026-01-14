@@ -53,6 +53,6 @@ def plot_image_live(
     fig, axs = plt.subplots()
     axs.matshow(data)
     if title is not None and isinstance(title, str):
-        axs.title(title)
-        axs.colorbar()
+        axs.set_title(title)
+    fig.colorbar()
     live_session.log_image("matplotlib.png", fig)

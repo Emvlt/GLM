@@ -12,10 +12,7 @@ from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, PSNR, set_data_shape)
 
-def pretraining_loop(
-        model_save_path : Path,
-        metrics_file_path : Path
-        ):
+def pretraining_loop():
     # We load the different parameters
     parameters = yaml.safe_load(open("params.yaml"))['pretrain']
     # What are the training hyperparameters
@@ -64,10 +61,13 @@ def pretraining_loop(
         lr=learning_rate
         )
     
-    model_save_path = Path('glm/src/saved_models')
-    model_save_path.mkdir(exist_ok=True)
+    model_save_path = Path('src/glm/saved_models/')
+    model_save_path.parent.mkdir(exist_ok=True)
 
     with Live(save_dvc_exp=True) as live:
+
+        live.log_params(hyperparameters)
+
         for epoch in range(epochs):
             for index, tensor_dict in enumerate(train_dataloader):
                 batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
@@ -94,7 +94,9 @@ def pretraining_loop(
                 optimiser.step()
 
                 current_psnr = psnr(infered_sinogram, input_sinogram)
-                live.log_metric("pretraining/training/PSNR", current_psnr)
+                live.log_metric(
+                    "pretraining/training/PSNR", current_psnr.item())
+                live.log_metric("pretraining/training/loss", loss.item())
                 live.next_step()
             
             if index %50==0:
@@ -139,13 +141,10 @@ def pretraining_loop(
                     )
         
 
-        live.log_metric("pretraining/valiation/PSNR", mean(validation))
-
-        torch.save(model, model_save_path.joinpath(
-            'pretrained_sinogram_model.pt')
-            )
+        live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
+        live.log_artifact(str(model_save_path), type="model", name="pretrained_sinogram_model")
+        torch.save(model, model_save_path)
         
 
 if __name__ == '__main__':
-
     pretraining_loop()
