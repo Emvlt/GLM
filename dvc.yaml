@@ -39,7 +39,6 @@ stages:
       - ${train.data.processed_path}
     params:
       - pretrain
-    metrics:
-      - metrics.json
     outs:
-      - saved_models/pretrained_model.pt
+      - dvclive
+      - src/glm/saved_models/pretrained_sinogram_model.pt
