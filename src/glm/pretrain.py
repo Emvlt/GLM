@@ -14,7 +14,8 @@ from glm.models.utils import (get_angles_list_from_downsampling, load_model, loa
 
 def pretraining_loop():
     # We load the different parameters
-    parameters = yaml.safe_load(open("params.yaml"))['pretrain']
+    data_parameters = yaml.safe_load(open("params.yaml"))['data']
+    parameters = yaml.safe_load(open("params.yaml"))['pretrain_parameters']
     # What are the training hyperparameters
     hyperparameters = parameters['hyperparameters']
     # Instanciate the device object
@@ -39,14 +40,14 @@ def pretraining_loop():
     loss_function = torch.nn.MSELoss()
     # Datasets
     train_dataloader = parse_dataloader(
-        dataset_path = parameters['data']['processed_path'],
+        dataset_path = data_parameters['processed_path'],
         mode = 'training',
         data_tuples=[('preprocessed_sinogram', 'mode2')],
         batch_size=hyperparameters['batch_size'],
         num_workers=hyperparameters['num_workers']
     )
     validation_dataloader = parse_dataloader(
-        dataset_path = parameters['data']['processed_path'],
+        dataset_path = data_parameters['processed_path'],
         mode = 'validation',
         data_tuples=[('preprocessed_sinogram', 'mode2')],
         batch_size=hyperparameters['batch_size'],

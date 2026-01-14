@@ -1,44 +1,51 @@
 stages:
   prepare_demo:
-      cmd: uv run python src/glm/preprocess_2detect.py mode2 demo
-      deps:
-        - src/glm/preprocess_2detect.py 
-        - src/glm/datasets/raw/2detect
-      params:
-        - demo
-      outs:
-        - src/glm/datasets/processed/2detect
+    cmd: uv run python src/glm/preprocess_2detect.py mode2 demo
+    deps:
+    - src/glm/preprocess_2detect.py
+    - src/glm/datasets/raw/2detect
+    params:
+    - demo
+    outs:
+    - src/glm/datasets/processed/2detect
 
   run_demo:
-      cmd: uv run python src/glm/run_demo.py
-      deps:
-        - src/glm/run_demo.py 
-        - src/glm/datasets/processed/2detect
-      params:
-        - demo
-      outs:
-        - src/glm/images/demo/reconstruction.jpg
-        - src/glm/images/demo/sinogram.jpg
-        - src/glm/images/demo/target.jpg
+    cmd: uv run python src/glm/run_demo.py
+    deps:
+    - src/glm/run_demo.py
+    - src/glm/datasets/processed/2detect
+    params:
+    - demo
+    outs:
+    - src/glm/images/demo/reconstruction.jpg
+    - src/glm/images/demo/sinogram.jpg
+    - src/glm/images/demo/target.jpg
 
   prepare_training:
     cmd: uv run python src/glm/preprocess_2detect.py mode2 train
     deps:
-      - src/glm/preprocess_2detect.py
-      - ${data.raw_path}
+    - src/glm/preprocess_2detect.py
+    - ${data.raw_path}
     params:
-      - data 
+    - data
     outs:
-      - ${data.processed_path}:
-          cache: false
+    - ${data.processed_path}:
+        cache: false
 
   pretraining:
     cmd: uv run python src/glm/pretrain.py
     deps:
-      - src/glm/pretrain.py
-      - ${data.processed_path}
+    - src/glm/pretrain.py
+    - ${data.processed_path}
     params:
-      - pretrain_parameters
+    - pretrain_parameters
     outs:
-      - dvclive
-      - src/glm/saved_models/pretrained_sinogram_model.pt
+    - dvclive
+    - src/glm/saved_models/pretrained_sinogram_model.pt
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step

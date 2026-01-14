@@ -65,14 +65,13 @@ stages:
       nfiles: 92001
     - path: src/glm/preprocess_2detect.py
       hash: md5
-      md5: ccfb656291e0f83eff067e63aece625d
-      size: 2538
+      md5: 55e400fc88c0fa959bb7d81cbc86ba39
+      size: 2717
     params:
       params.yaml:
-        train:
-          data:
-            raw_path: /home/emilien/datasets/raw/2detect
-            processed_path: /home/emilien/datasets/processed/2detect
+        data:
+          raw_path: /home/emilien/datasets/raw/2detect
+          processed_path: /home/emilien/datasets/processed/2detect
     outs:
     - path: /home/emilien/datasets/processed/2detect
       hash: md5
