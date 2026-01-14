@@ -36,3 +36,23 @@ def plot_image(data, savepath, extension=None, title=None):
     plt.colorbar()
     plt.savefig(f'{savepath}.{extension}', bbox_inches = 'tight')
     plt.clf()
+
+def plot_image_live(
+        data, live_session, name, extension=None, title=None
+        ):
+    if extension is None:
+        extension = 'jpg'
+
+    if isinstance(data, np.ndarray):
+        data = _process_numpy(data)
+    elif isinstance(data, torch.Tensor):
+        data = _process_torch(data)
+    else:
+        raise NotImplementedError
+    
+    fig, axs = plt.subplots()
+    axs.matshow(data)
+    if title is not None and isinstance(title, str):
+        axs.title(title)
+        axs.colorbar()
+    live_session.log_image("matplotlib.png", fig)

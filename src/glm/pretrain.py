@@ -5,8 +5,10 @@ import json
 import yaml
 import torch
 from torch_geometric.data import Batch
+from dvclive import Live
+from statistics import mean
 
-from glm.utils import plot_image
+from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, PSNR, set_data_shape)
 
@@ -63,45 +65,86 @@ def pretraining_loop(
         )
     
     model_save_path = Path('glm/src/saved_models')
+    model_save_path.mkdir(exist_ok=True)
 
-    for epoch in range(epochs):
-        for index, tensor_dict in enumerate(train_dataloader):
-            batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
+    with Live(save_dvc_exp=True) as live:
+        for epoch in range(epochs):
+            for index, tensor_dict in enumerate(train_dataloader):
+                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
 
-            input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
+                input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
 
-            optimiser.zero_grad()
-            input_sinogram  = set_data_shape(
-                model = model,
-                batch_size=batch_size,
-                angles_indices = angles_indices,
-                tensor = input_sinogram, 
-                target='NN')
+                input_sinogram  = set_data_shape(
+                    model = model,
+                    batch_size=batch_size,
+                    angles_indices = angles_indices,
+                    tensor = input_sinogram, 
+                    target='NN')
 
-            if graph is None:
-                infered_sinogram = model(input_sinogram)
-            else:
-                graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] )
-                infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+                optimiser.zero_grad()
+
+                if graph is None:
+                    infered_sinogram = model(input_sinogram)
+                else:
+                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] )
+                    infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+                
+                loss = loss_function(infered_sinogram, input_sinogram)
+                loss.backward()
+                optimiser.step()
+
+                current_psnr = psnr(infered_sinogram, input_sinogram)
+                live.log_metric("pretraining/training/PSNR", current_psnr)
+                live.next_step()
             
-            loss = loss_function(infered_sinogram, input_sinogram)
-            loss.backward()
-            optimiser.step()
+            if index %50==0:
+                plot_image_live(
+                data = infered_sinogram.view(batch_size, n_measurements, 956), 
+                name = 'infered_sinogram',
+                title='Infered Sinogram',
+                extension='jpg',
+                live_session = live
+                )
 
-            plot_image(
-            infered_sinogram.view(batch_size, n_measurements, 956), 
-            'src/glm/images/demo/infered_sinogram', 
-            title='infered_sinogram',
-            extension='jpg'
-            )
+                plot_image_live(
+                input_sinogram.view(batch_size, n_measurements, 956), 
+                name = 'input_sinogram',
+                title='Input Sinogram',
+                extension='jpg',
+                live_session = live
+                )
 
-            plot_image(
-            input_sinogram.view(batch_size, n_measurements, 956), 
-            'src/glm/images/demo/input_sinogram', 
-            title='input_sinogram',
-            extension='jpg'
+        validation = []
+        with torch.no_grad():
+            for index, tensor_dict in enumerate(validation_dataloader):
+                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
+
+                input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
+
+                input_sinogram  = set_data_shape(
+                    model = model,
+                    batch_size=batch_size,
+                    angles_indices = angles_indices,
+                    tensor = input_sinogram, 
+                    target='NN')
+
+                if graph is None:
+                    infered_sinogram = model(input_sinogram)
+                else:
+                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] )
+                    infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+
+                validation.append(
+                    psnr(infered_sinogram, input_sinogram).item()
+                    )
+        
+
+        live.log_metric("pretraining/valiation/PSNR", mean(validation))
+
+        torch.save(model, model_save_path.joinpath(
+            'pretrained_sinogram_model.pt')
             )
-            
+        
 
 if __name__ == '__main__':
 
