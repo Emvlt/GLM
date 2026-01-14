@@ -34,5 +34,5 @@ def plot_image(data, savepath, extension=None, title=None):
     if title is not None and isinstance(title, str):
         plt.title(title)
     plt.colorbar()
-    plt.savefig(f'{savepath}.{extension}')
+    plt.savefig(f'{savepath}.{extension}', bbox_inches = 'tight')
     plt.clf()

@@ -10,12 +10,12 @@ from odl.contrib.torch.operator import OperatorModule
 from odl.contrib.graphs.graph_interface import create_graph_from_geometry
 from odl.contrib.datasets.ct.detect import detect_geometry, detect_ray_trafo, preprocess_sinogram
 
-from utils import plot_image
+from glm.utils import plot_image
 
 def main():
     if len(sys.argv) != 1:
         sys.stderr.write("Arguments error. Usage:\n")
-        sys.stderr.write("\tpython preprocess_2detect.py \n")
+        sys.stderr.write("\tpython run_demo.py \n")
         sys.exit(1)
 
     parameters = yaml.safe_load(open("params.yaml"))

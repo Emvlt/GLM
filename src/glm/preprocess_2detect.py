@@ -22,6 +22,12 @@ def loop_over_dataset(
         processed_path:pathlib.Path, 
         mode='mode2'
         ):
+    print(f'Processing the 2detect dataset: \n')
+    print(f'\t Raw filepath: {raw_path}\n')
+    print(f'\t Processed filepath: {processed_path}\n')
+
+    assert raw_path.glob(f'*/{mode}') is not [], f'There are no files matching the 2detect pattern 2detect/slice0000x/{mode}, aborting.'
+
     for path_to_slice in tqdm(raw_path.glob(f'*/{mode}')):
         slice_name = path_to_slice.parent.stem
         path_to_processed_folder = processed_path.joinpath(f'{slice_name}/{mode}')
@@ -55,6 +61,9 @@ def main():
 
     raw_path = pathlib.Path(parameters[task]['data']['raw_path'])
     processed_path = pathlib.Path(parameters[task]['data']['processed_path'])
+
+    assert raw_path.is_dir(), f'The input raw_path {raw_path} is not a dir.'
+
     loop_over_dataset(raw_path, processed_path, mode)
 
 if __name__ == '__main__':
