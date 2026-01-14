@@ -3,9 +3,11 @@ demo:
     raw_path: "src/glm/datasets/raw/2detect"
     processed_path: "src/glm/datasets/processed/2detect"
 
-pretrain:
-  data:
-    processed_path: "/home/emilien/datasets/processed/2detect"
+data:
+  raw_path: "/home/emilien/datasets/raw/2detect"
+  processed_path: "/home/emilien/datasets/processed/2detect"
+
+pretrain_parameters:  
   hyperparameters:
     learning_rate: 5e-4
     epochs: 1
@@ -33,8 +35,3 @@ pretrain:
       kernel_dimension: 2
       padding: 3
       n_channels: 16
-
-train:
-  data:
-    raw_path: "/home/emilien/datasets/raw/2detect"
-    processed_path: "/home/emilien/datasets/processed/2detect"

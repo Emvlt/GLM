@@ -25,20 +25,20 @@ stages:
     cmd: uv run python src/glm/preprocess_2detect.py mode2 train
     deps:
       - src/glm/preprocess_2detect.py
-      - ${train.data.raw_path}
+      - ${data.raw_path}
     params:
-      - train 
+      - data 
     outs:
-      - ${train.data.processed_path}:
+      - ${data.processed_path}:
           cache: false
 
   pretraining:
     cmd: uv run python src/glm/pretrain.py
     deps:
       - src/glm/pretrain.py
-      - ${train.data.processed_path}
+      - ${data.processed_path}
     params:
-      - pretrain
+      - pretrain_parameters
     outs:
       - dvclive
       - src/glm/saved_models/pretrained_sinogram_model.pt
