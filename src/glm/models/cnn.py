@@ -67,11 +67,12 @@ class CNN_Module(nn.Module):
 class ImageCNN(nn.Module):
     def __init__(
         self,
-        input_channels : int, 
-        out_channels:int,
+
         parameters_dict : Dict
     ):
         super().__init__()
+        in_channels = parameters_dict['in_channels']
+        out_channels = parameters_dict['out_channels']
         self.dimension = parameters_dict['kernel_dimension'] 
         kernel_size = parameters_dict['kernel_size'] 
         padding = parameters_dict['padding']
@@ -79,7 +80,7 @@ class ImageCNN(nn.Module):
             
         if self.dimension == 2:
             self.model = nn.Sequential(
-                nn.Conv2d(input_channels, n_channels, kernel_size, padding=padding),
+                nn.Conv2d(in_channels, n_channels, kernel_size, padding=padding),
                 nn.LeakyReLU(negative_slope=0.1),
                 nn.Conv2d(n_channels, n_channels, kernel_size, stride=1, padding=padding),
                 nn.LeakyReLU(negative_slope=0.1),

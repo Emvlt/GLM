@@ -62,8 +62,8 @@ def training_loop():
     )
 
     # 3) The image model
-    active_image_model = pretrain_parameters['active_model']
-    model_parameters = pretrain_parameters['models'][active_image_model]
+    active_image_model = train_parameters['active_image_model']
+    model_parameters = train_parameters['image_models'][active_image_model]
     image_model : torch.nn.Module = load_model(
         active_image_model, model_parameters
         )
@@ -75,7 +75,7 @@ def training_loop():
         image_model = DDP(image_model, device_ids=[local_rank], output_device=local_rank)
 
     # And the graph
-    graph = load_graph(sinogram_model, geometry)
+    graph = load_graph(active_sinogram_model, geometry)
     if graph is not None:
         print(graph)
 
@@ -87,7 +87,10 @@ def training_loop():
     train_dataloader = parse_dataloader(
         dataset_path = data_parameters['processed_path'],
         mode = 'training',
-        data_tuples=[('preprocessed_sinogram', 'mode2')],
+        data_tuples=[
+            ('preprocessed_sinogram', 'mode2'),
+            ('preprocessed_reconstruction', 'mode2')
+            ],
         batch_size=hyperparameters['batch_size'],
         num_workers=hyperparameters['num_workers'],
         distributed=(world_size > 1),
@@ -97,7 +100,10 @@ def training_loop():
     validation_dataloader = parse_dataloader(
         dataset_path = data_parameters['processed_path'],
         mode = 'validation',
-        data_tuples=[('preprocessed_sinogram', 'mode2')],
+        data_tuples=[
+            ('preprocessed_sinogram', 'mode2'),
+            ('preprocessed_reconstruction', 'mode2')
+            ],
         batch_size=hyperparameters['batch_size'],
         num_workers=hyperparameters['num_workers'],
         distributed=(world_size > 1),
@@ -134,7 +140,7 @@ def training_loop():
                 batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
                 input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
-                target_image = tensor_dict['preprocessed_image_mode2'].float().to(device)
+                target_reconstruction = tensor_dict['preprocessed_reconstruction_mode2'].float().to(device)
 
                 input_sinogram  = set_data_shape(
                     model = sinogram_model,
@@ -164,12 +170,12 @@ def training_loop():
                 
                 infered_image = image_model(infered_reconstruction)
                 
-                loss = loss_function(infered_image, target_image)
+                loss = loss_function(infered_image, target_reconstruction)
                 loss.backward()
                 optimiser.step()
 
                 if is_main_process:
-                    current_psnr = psnr(infered_image, target_image)
+                    current_psnr = psnr(infered_image, target_reconstruction)
                     live.log_metric(
                         "training/PSNR", current_psnr.item())
                     live.log_metric("training/loss", loss.item())
@@ -185,8 +191,8 @@ def training_loop():
                     )
 
                     plot_image_live(
-                    data = target_image, 
-                    name = 'target_image',
+                    data = target_reconstruction, 
+                    name = 'target_reconstruction',
                     title='Target Image',
                     extension='jpg',
                     live_session = live
@@ -200,7 +206,7 @@ def training_loop():
                 batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
                 input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
-                target_image = tensor_dict['preprocessed_image_mode2'].float().to(device)
+                target_reconstruction = tensor_dict['preprocessed_image_mode2'].float().to(device)
 
                 input_sinogram  = set_data_shape(
                     model = sinogram_model,
@@ -229,7 +235,7 @@ def training_loop():
                 infered_image = image_model(infered_reconstruction)
                 
                 validation.append(
-                    psnr(infered_image, target_image).item()
+                    psnr(infered_image, target_reconstruction).item()
                     )
                 
         if world_size > 1:

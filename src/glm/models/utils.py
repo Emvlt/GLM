@@ -117,7 +117,7 @@ def load_pseudo_inverse(
     if name == 'backprojection':
         n_voxels = parameters['n_voxels']
         impl = parameters['impl']
-        return detect_ray_trafo(n_voxels, impl, device, geometry)
+        return detect_ray_trafo(n_voxels, impl, device, geometry).adjoint
     else:
         raise NotImplementedError(f'The pseudo inverse is not implemented for {name}. Currently, only ["backprojection"] is supported')
     
