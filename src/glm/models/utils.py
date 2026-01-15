@@ -62,7 +62,7 @@ def load_model(model_name:str, model_parameters:Dict):
     return model
 
 def load_geometry(angles_indices:List=None):
-    return detect_geometry(n_voxels = 512, angles_indices=angles_indices)
+    return detect_geometry(n_voxels = 1024, angles_indices=angles_indices)
 
 def load_graph(model_name, geometry):
     if model_name == 'GLM':        

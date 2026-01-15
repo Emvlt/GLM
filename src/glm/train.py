@@ -1,5 +1,6 @@
 from pathlib import Path
 import os 
+import torch.multiprocessing as mp
 
 import yaml
 import torch
@@ -92,7 +93,7 @@ def training_loop():
             ('preprocessed_reconstruction', 'mode2')
             ],
         batch_size=hyperparameters['batch_size'],
-        num_workers=hyperparameters['num_workers'],
+        num_workers=0,
         distributed=(world_size > 1),
         rank=rank,
         world_size=world_size
@@ -264,4 +265,5 @@ def training_loop():
         
 
 if __name__ == '__main__':
+    mp.set_start_method('spawn', force=True)
     training_loop()
