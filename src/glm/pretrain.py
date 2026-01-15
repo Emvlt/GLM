@@ -79,7 +79,7 @@ def pretraining_loop():
                     model = model,
                     batch_size=batch_size,
                     angles_indices = angles_indices,
-                    n_pixels = n_measurements,
+                    n_measurements = n_measurements,
                     tensor = input_sinogram, 
                     target='NN')
 
@@ -129,6 +129,7 @@ def pretraining_loop():
                     model = model,
                     batch_size=batch_size,
                     angles_indices = angles_indices,
+                    n_measurements = n_measurements,
                     tensor = input_sinogram, 
                     target='NN')
 
