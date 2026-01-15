@@ -22,7 +22,7 @@ pretrain_parameters:
       kernel_size: 7
       kernel_dimension: 1
       padding: 3
-      n_channels: 16
+      n_channels: 24
       # GNN parameters
       normalize: true
       improved: true
