@@ -14,7 +14,7 @@ pretrain_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
-  active_model: GLM
+  active_model: sinogram_CNN
   models:
     GLM:
       # CNN parameters
