@@ -115,14 +115,14 @@ stages:
               kernel_size: 7
               kernel_dimension: 2
               padding: 3
-              n_channels: 16
+              n_channels: 24
     outs:
     - path: dvclive
       hash: md5
-      md5: 5598755d6d44fa455a842d29eff0270d.dir
-      size: 46758
+      md5: 5e67ff64f07216348788c2ee6310a2fa.dir
+      size: 46997
       nfiles: 7
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 1f049b264c24b1ed345601ef626cf4af
-      size: 168515
+      md5: 0204f31065b6977a983f285847144938
+      size: 359747
