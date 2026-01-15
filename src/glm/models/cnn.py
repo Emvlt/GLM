@@ -13,7 +13,7 @@ class CNN_Module(nn.Module):
         super().__init__()
 
         self.dimension = parameters_dict['kernel_dimension'] 
-        kernel_size = parameters_dict['kernel_dimension'] 
+        kernel_size = parameters_dict['kernel_size'] 
         padding = parameters_dict['padding']
 
         if self.dimension == 2:
@@ -73,7 +73,7 @@ class ImageCNN(nn.Module):
     ):
         super().__init__()
         self.dimension = parameters_dict['kernel_dimension'] 
-        kernel_size = parameters_dict['kernel_dimension'] 
+        kernel_size = parameters_dict['kernel_size'] 
         padding = parameters_dict['padding']
         n_channels = parameters_dict['n_channels']
             
