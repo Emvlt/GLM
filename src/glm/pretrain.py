@@ -27,7 +27,14 @@ def pretraining_loop():
     hyperparameters = parameters['hyperparameters']
 
     # Instanciate the device object
-    device = torch.device(hyperparameters['device'])
+    local_rank = int(local_rank)
+    device = torch.device(f'cuda:{local_rank}')
+
+    print('Seting up distributed learning:')
+    print(f'\t rank: {rank}')
+    print(f'\t local rank: {local_rank}')
+    print(f'\t world size: {world_size}')
+    print(f'\t device: {device}')
 
     # We load the geometry object
     downsampling = hyperparameters['downsampling']
