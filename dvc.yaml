@@ -50,3 +50,7 @@ plots:
 - dvclive/plots/metrics:
     x: step
 - dvclive/plots/images
+artifacts:
+  pretrained_sinogram_model:
+    path: src/glm/saved_models/pretrained_sinogram_model.pt
+    type: model

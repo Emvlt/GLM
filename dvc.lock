@@ -78,3 +78,52 @@ stages:
       md5: c9b5188af6c5685168104b496816ee67.dir
       size: 182432320000
       nfiles: 11500
+  pretraining:
+    cmd: uv run python src/glm/pretrain.py
+    deps:
+    - path: /home/emilien/datasets/processed/2detect
+      hash: md5
+      md5: c9b5188af6c5685168104b496816ee67.dir
+      size: 182432320000
+      nfiles: 11500
+    - path: src/glm/pretrain.py
+      hash: md5
+      md5: da48ee51826a3ba271c13affc12e2b07
+      size: 5961
+    params:
+      params.yaml:
+        pretrain_parameters:
+          hyperparameters:
+            learning_rate: 0.0005
+            epochs: 1
+            batch_size: 8
+            num_workers: 2
+            device: cuda:0
+            downsampling: 1
+          active_model: GLM
+          models:
+            GLM:
+              kernel_size: 7
+              kernel_dimension: 1
+              padding: 3
+              n_channels: 16
+              normalize: true
+              improved: true
+              cached: false
+              add_self_loops: true
+              aggr: add
+            sinogram_CNN:
+              kernel_size: 7
+              kernel_dimension: 2
+              padding: 3
+              n_channels: 16
+    outs:
+    - path: dvclive
+      hash: md5
+      md5: 6d14c294ce717877b1f6c47306f4624b.dir
+      size: 59390
+      nfiles: 7
+    - path: src/glm/saved_models/pretrained_sinogram_model.pt
+      hash: md5
+      md5: 7e3c4b2a344cd8c2517c72620c0d0dd5
+      size: 44611
