@@ -2,8 +2,11 @@ from typing import Dict,List
 
 import torch
 from torch_geometric.nn import Sequential
+
+from odl.contrib.torch.operator import OperatorModule
+from odl.applications.tomo.geometry import Geometry
 from odl.contrib.graphs.graph_interface import create_graph_from_geometry
-from odl.contrib.datasets.ct.detect import detect_geometry
+from odl.contrib.datasets.ct.detect import detect_geometry, detect_ray_trafo
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 from .cnn import ImageCNN, CNN_Module
@@ -104,3 +107,27 @@ def get_angles_list_from_downsampling(downsampling : int = 1):
     if downsampling==1:
         return None
     return [i for i in range(0, 3600, downsampling)]
+
+def load_pseudo_inverse(
+        name:str, 
+        parameters:Dict, 
+        geometry:Geometry,
+        device,
+        ):
+    if name == 'backprojection':
+        n_voxels = parameters['n_voxels']
+        impl = parameters['impl']
+        return detect_ray_trafo(n_voxels, impl, device, geometry)
+    else:
+        raise NotImplementedError(f'The pseudo inverse is not implemented for {name}. Currently, only ["backprojection"] is supported')
+    
+def load_pseudo_inverse_as_module(
+        name:str, 
+        parameters:Dict, 
+        geometry:Geometry,
+        device,
+        ):
+    pseudo_inverse = load_pseudo_inverse(
+        name, parameters, geometry, device
+    )
+    return OperatorModule(pseudo_inverse)
