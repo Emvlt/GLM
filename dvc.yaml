@@ -49,3 +49,4 @@ metrics:
 plots:
 - dvclive/plots/metrics:
     x: step
+- dvclive/plots/images
