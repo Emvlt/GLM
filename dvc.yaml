@@ -45,6 +45,9 @@ stages:
 
   training:
     cmd: torchrun --nproc_per_node=2 src/glm/train.py
+    params:
+    - pretrain_parameters
+    - train_parameters
     deps:
     - src/glm/pretrain.py
     - src/glm/train.py
