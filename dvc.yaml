@@ -33,7 +33,7 @@ stages:
         cache: false
 
   pretraining:
-    cmd: uv run torchrun --nproc_per_node=2 src/glm/pretrain.py
+    cmd: torchrun --nproc_per_node=2 src/glm/pretrain.py
     deps:
     - src/glm/pretrain.py
     - ${data.processed_path}
@@ -42,6 +42,17 @@ stages:
     outs:
     - dvclive
     - src/glm/saved_models/pretrained_sinogram_model.pt
+
+  training:
+    cmd: torchrun --nproc_per_node=2 src/glm/train.py
+    deps:
+    - src/glm/pretrain.py
+    - src/glm/train.py
+    - ${data.processed_path}
+    - src/glm/saved_models/pretrained_sinogram_model.pt
+    outs:
+    - src/glm/saved_models/model.pt
+
 params:
 - dvclive/params.yaml
 artifacts:

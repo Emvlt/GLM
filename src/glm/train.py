@@ -6,6 +6,7 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch_geometric.data import Batch
+import torch_geometric
 from dvclive import Live
 from statistics import mean
 
@@ -22,7 +23,7 @@ def training_loop():
     # We load the different parameters
     data_parameters = yaml.safe_load(open("params.yaml"))['data']
     train_parameters = yaml.safe_load(open("params.yaml"))['train_parameters']
-    pretrain_parameters = yaml.safe_load(open("params.yaml"))['train_parameters']
+    pretrain_parameters = yaml.safe_load(open("params.yaml"))['pretrain_parameters']
     # What are the training hyperparameters
     hyperparameters = train_parameters['hyperparameters']
 
@@ -246,8 +247,8 @@ def training_loop():
             sin_model_to_save = sinogram_model.module if world_size > 1 else sinogram_model
             img_model_to_save = image_model.module if world_size > 1 else  image_model
             torch.save({
-                'sinogram_model':sin_model_to_save,
-                'image_model':img_model_to_save
+                'sinogram_model':sin_model_to_save.state_dict(),
+                'image_model':img_model_to_save.state_dict()
                 }, model_save_path)
 
     finally:

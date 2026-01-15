@@ -14,14 +14,14 @@ pretrain_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
-  active_model: sinogram_CNN
+  active_model: GLM
   models:
     GLM:
       # CNN parameters
       kernel_size: 7
       kernel_dimension: 1
       padding: 3
-      n_channels: 24
+      n_channels: 16
       # GNN parameters
       normalize: true
       improved: true
@@ -34,3 +34,28 @@ pretrain_parameters:
       kernel_dimension: 2
       padding: 3
       n_channels: 24
+
+train_parameters:
+  hyperparameters:
+    learning_rate: 5e-4
+    epochs: 1
+    batch_size: 8
+    num_workers: 2
+    downsampling: 1
+  active_pseudo_inverse: backprojection
+  pseudo_inverse:
+    backprojection:
+      n_voxels: 1024
+      impl: pytorch
+    filtered_backprojection:
+      filter_name: Ram-Lak
+  active_image_model: image_CNN
+  image_models:
+    image_CNN:
+      n_channels: 32
+      in_channels: 1
+      out_channels: 1
+      dimension: 2
+      kernel_size: 7
+      padding: 3
+
