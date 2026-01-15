@@ -5,7 +5,6 @@ import yaml
 import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.utils.data.distributed import DistributedSampler
 from torch_geometric.data import Batch
 from dvclive import Live
 from statistics import mean
@@ -192,7 +191,8 @@ def pretraining_loop():
         if is_main_process:
             live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
             live.log_artifact(str(model_save_path), type="model", name="pretrained_sinogram_model")
-            torch.save(model, model_save_path)
+            model_to_save = model.module if world_size > 1 else model
+            torch.save(model_to_save, model_save_path)
 
     finally:
         if is_main_process and live is not None:

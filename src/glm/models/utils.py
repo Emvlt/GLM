@@ -4,6 +4,7 @@ import torch
 from torch_geometric.nn import Sequential
 from odl.contrib.graphs.graph_interface import create_graph_from_geometry
 from odl.contrib.datasets.ct.detect import detect_geometry
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 from .cnn import ImageCNN, CNN_Module
 from .gnn import GLM_Module
@@ -82,6 +83,16 @@ def set_data_shape(
     if isinstance(model, torch.nn.Sequential) or isinstance(model, Sequential):
         return model[0].set_data_shape(
             batch_size, angles_indices, n_measurements, n_pixels, tensor, target
+            )
+    elif isinstance(model, DDP):
+        return set_data_shape(
+            model.module, 
+            batch_size=batch_size,
+            angles_indices = angles_indices,
+            n_measurements = n_measurements,          
+            tensor = tensor, 
+            target = target,
+            n_pixels = n_pixels
             )
     else:
         return model.set_data_shape(
