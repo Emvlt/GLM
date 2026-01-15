@@ -54,7 +54,6 @@ def pretraining_loop():
     # And the graph
     graph = load_graph(active_model, geometry)
     if graph is not None:
-        graph = graph.to(device)
         print(graph)
 
     # Loss functions
@@ -97,7 +96,9 @@ def pretraining_loop():
     live = Live(save_dvc_exp=True, dir="dvclive") if is_main_process else None
 
     try:
-        live.log_params(hyperparameters)
+        print(f'Running experiments on device {device}')
+        if is_main_process:
+            live.log_params(hyperparameters)
 
         for epoch in range(epochs):
 
@@ -123,8 +124,9 @@ def pretraining_loop():
                 if graph is None:
                     infered_sinogram = model(input_sinogram)
                 else:
-                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] )
+                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] ).to(device)
                     infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+
                 
                 loss = loss_function(infered_sinogram, input_sinogram)
                 loss.backward()

@@ -142,6 +142,7 @@ def parse_dataloader(
             shuffle=(mode == 'training')
         )
         shuffle = False  # Sampler handles shuffling
+        print(f'Running Distributed sampler on rank {rank}')
     else:
         sampler = None
         shuffle = (mode == 'training')

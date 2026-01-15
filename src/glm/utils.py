@@ -65,13 +65,17 @@ def setup_distributed():
         world_size = int(os.environ['WORLD_SIZE'])
         local_rank = int(os.environ['LOCAL_RANK'])
     else:
+        print("WARNING: distributed environment variables not found. Defaulting to single process.")
         rank = 0
         world_size = 1
         local_rank = 0
     
     if world_size > 1:
-        dist.init_process_group(backend='nccl')
-        torch.cuda.set_device(local_rank)
+        print(f'Initialising process group on device {local_rank}')
+        acc = torch.accelerator.current_accelerator()
+        backend = torch.distributed.get_default_backend_for_device(acc)
+        # initialize the process group
+        dist.init_process_group(backend, rank=rank, world_size=world_size)
     
     return rank, world_size, local_rank
 
