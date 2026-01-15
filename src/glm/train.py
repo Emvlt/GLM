@@ -72,7 +72,6 @@ def training_loop():
     # Wrap model in DDP if using multiple GPUs
     if world_size > 1:
         sinogram_model = DDP(sinogram_model, device_ids=[local_rank], output_device=local_rank)
-        pseudo_inverse = DDP(pseudo_inverse, device_ids=[local_rank], output_device=local_rank)
         image_model = DDP(image_model, device_ids=[local_rank], output_device=local_rank)
 
     # And the graph
@@ -110,7 +109,7 @@ def training_loop():
     learning_rate = float(hyperparameters['learning_rate'])
     epochs = int(hyperparameters['epochs'])
     optimiser = torch.optim.Adam(
-        [list(sinogram_model.parameters()), list(image_model.parameters())],
+        list(sinogram_model.parameters()) + list(image_model.parameters()),
         lr=learning_rate
         )
     
