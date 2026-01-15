@@ -71,7 +71,7 @@ def pretraining_loop():
 
         for epoch in range(epochs):
             for index, tensor_dict in enumerate(train_dataloader):
-                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
+                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
                 input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
 
@@ -79,6 +79,7 @@ def pretraining_loop():
                     model = model,
                     batch_size=batch_size,
                     angles_indices = angles_indices,
+                    n_pixels = n_measurements,
                     tensor = input_sinogram, 
                     target='NN')
 
@@ -120,7 +121,7 @@ def pretraining_loop():
         validation = []
         with torch.no_grad():
             for index, tensor_dict in enumerate(validation_dataloader):
-                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size()[0]
+                batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
                 input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
 

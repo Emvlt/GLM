@@ -54,5 +54,4 @@ def plot_image_live(
     axs.matshow(data)
     if title is not None and isinstance(title, str):
         axs.set_title(title)
-    fig.colorbar()
-    live_session.log_image("matplotlib.png", fig)
+    live_session.log_image(f"{name}.{extension}", fig)

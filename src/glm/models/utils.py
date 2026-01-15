@@ -73,13 +73,12 @@ def load_graph(model_name, geometry):
 def set_data_shape(
         model : torch.nn.Sequential | Sequential, 
         batch_size :int, 
-        angles_indices : None | List,         
+        angles_indices : None | List,
+        n_measurements : int,          
         tensor, 
         target,
         n_pixels : int = 956, 
         ):
-    n_measurements = 3600 if angles_indices is None else len(angles_indices)
-
     if isinstance(model, torch.nn.Sequential) or isinstance(model, Sequential):
         return model[0].set_data_shape(
             batch_size, angles_indices, n_measurements, n_pixels, tensor, target
