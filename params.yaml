@@ -26,7 +26,7 @@ pretrain_parameters:
       # GNN parameters
       normalize: true
       improved: true
-      cached: true
+      cached: false
       add_self_loops: true
       aggr: add
     sinogram_CNN:
