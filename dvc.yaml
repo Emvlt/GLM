@@ -33,7 +33,7 @@ stages:
         cache: false
 
   pretraining:
-    cmd: uv run python src/glm/pretrain.py
+    cmd: uv run torchrun --nproc_per_node=2 src/glm/pretrain.py
     deps:
     - src/glm/pretrain.py
     - ${data.processed_path}

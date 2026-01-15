@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-
+from torch.utils.data.distributed import DistributedSampler
 
 class ScanDataset(Dataset):
     def __init__(
@@ -120,8 +120,10 @@ def parse_dataloader(
         mode:str,
         data_tuples:List[tuple],
         batch_size : int, 
-        num_workers : int
-        
+        num_workers : int,
+        distributed=False,
+        rank=0,
+        world_size=1        
         ):
     
     dataset = ScanDataset(
@@ -132,11 +134,24 @@ def parse_dataloader(
 
     print(f'Instanciating 2detect {mode} dataset with size {len(dataset)}')
 
-    shuffle = True if mode =='training' else False
+    if distributed:
+        sampler = DistributedSampler(
+            dataset,
+            num_replicas=world_size,
+            rank=rank,
+            shuffle=(mode == 'training')
+        )
+        shuffle = False  # Sampler handles shuffling
+    else:
+        sampler = None
+        shuffle = (mode == 'training')
 
     return DataLoader(
         dataset = dataset,
         batch_size = batch_size,
         shuffle = shuffle,
         num_workers = num_workers,
+        sampler = sampler,
+        pin_memory=True,
+        drop_last=True  # Important for consistent batch sizes
         )

@@ -1,7 +1,9 @@
 import pathlib
+import os 
 
 import numpy as np
 import torch
+import torch.distributed as dist
 import matplotlib.pyplot as plt
 
 def _process_numpy(data:np.ndarray) -> np.ndarray:
@@ -55,3 +57,25 @@ def plot_image_live(
     if title is not None and isinstance(title, str):
         axs.set_title(title)
     live_session.log_image(f"{name}.{extension}", fig)
+
+def setup_distributed():
+    """Initialize distributed training"""
+    if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
+        rank = int(os.environ['RANK'])
+        world_size = int(os.environ['WORLD_SIZE'])
+        local_rank = int(os.environ['LOCAL_RANK'])
+    else:
+        rank = 0
+        world_size = 1
+        local_rank = 0
+    
+    if world_size > 1:
+        dist.init_process_group(backend='nccl')
+        torch.cuda.set_device(local_rank)
+    
+    return rank, world_size, local_rank
+
+def cleanup_distributed():
+    """Clean up distributed training"""
+    if dist.is_initialized():
+        dist.destroy_process_group()
