@@ -62,7 +62,7 @@ def pretraining_loop():
         lr=learning_rate
         )
     
-    model_save_path = Path('src/glm/saved_models/')
+    model_save_path = Path('src/glm/saved_models/pretrained_sinogram_model.pt')
     model_save_path.parent.mkdir(exist_ok=True)
 
     with Live(save_dvc_exp=True, dir="dvclive") as live:
