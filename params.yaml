@@ -48,6 +48,8 @@ train_parameters:
       n_voxels: 1024
       impl: pytorch
     filtered_backprojection:
+      n_voxels: 1024
+      impl: pytorch
       filter_name: Ram-Lak
   active_image_model: image_CNN
   image_models:

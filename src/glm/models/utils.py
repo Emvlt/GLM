@@ -119,7 +119,7 @@ def load_pseudo_inverse(
         n_voxels = parameters['n_voxels']
         impl = parameters['impl']
         return detect_ray_trafo(n_voxels, impl, device, geometry).adjoint
-    elif name == 'filtered-backprojection':
+    elif name == 'filtered_backprojection':
         n_voxels = parameters['n_voxels']
         impl = parameters['impl']
         ray_trafo = detect_ray_trafo(n_voxels, impl, device, geometry)
@@ -128,7 +128,7 @@ def load_pseudo_inverse(
         padding = parameters['padding'] if 'padding' in parameters else True
         return fbp_op(ray_trafo, padding, filter_type, frequency_scaling)
     else:
-        raise NotImplementedError(f'The pseudo inverse is not implemented for {name}. Currently, only ["backprojection"] is supported')
+        raise NotImplementedError(f'The pseudo inverse is not implemented for {name}. Currently, only ["backprojection", "filtered_backprojection"] is supported')
     
 def load_pseudo_inverse_as_module(
         name:str, 
