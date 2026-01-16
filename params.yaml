@@ -42,7 +42,7 @@ train_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
-  active_pseudo_inverse: backprojection
+  active_pseudo_inverse: filtered_backprojection
   pseudo_inverse:
     backprojection:
       n_voxels: 1024
