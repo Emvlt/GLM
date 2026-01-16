@@ -5,6 +5,7 @@ from torch_geometric.nn import Sequential
 
 from odl.contrib.torch.operator import OperatorModule
 from odl.applications.tomo.geometry import Geometry
+from odl.applications.tomo.analytic import fbp_op
 from odl.contrib.graphs.graph_interface import create_graph_from_geometry
 from odl.contrib.datasets.ct.detect import detect_geometry, detect_ray_trafo
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -118,6 +119,14 @@ def load_pseudo_inverse(
         n_voxels = parameters['n_voxels']
         impl = parameters['impl']
         return detect_ray_trafo(n_voxels, impl, device, geometry).adjoint
+    elif name == 'filtered-backprojection':
+        n_voxels = parameters['n_voxels']
+        impl = parameters['impl']
+        ray_trafo = detect_ray_trafo(n_voxels, impl, device, geometry)
+        filter_type = parameters['filter_type'] if 'filter_type' in parameters else 'Ram-Lak'
+        frequency_scaling = parameters['frequency_scaling'] if 'frequency_scaling' in parameters else 1.0
+        padding = parameters['padding'] if 'padding' in parameters else True
+        return fbp_op(ray_trafo, padding, filter_type, frequency_scaling)
     else:
         raise NotImplementedError(f'The pseudo inverse is not implemented for {name}. Currently, only ["backprojection"] is supported')
     

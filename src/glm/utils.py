@@ -75,7 +75,7 @@ def setup_distributed():
         acc = torch.accelerator.current_accelerator()
         backend = torch.distributed.get_default_backend_for_device(acc)
         # initialize the process group
-        dist.init_process_group(backend, rank=rank, world_size=world_size)
+        dist.init_process_group(backend, rank=rank, world_size=world_size, init_method='env://')
     
     return rank, world_size, local_rank
 

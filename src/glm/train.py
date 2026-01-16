@@ -1,5 +1,7 @@
 from pathlib import Path
 import os 
+import sys
+import signal
 import torch.multiprocessing as mp
 
 import yaml
@@ -262,8 +264,14 @@ def training_loop():
             live.end()
         cleanup_distributed()
 
-        
+def signal_handler(sig, frame):
+    """Handle Ctrl+C gracefully"""
+    rank = int(os.environ['RANK']) if 'rank' in locals() else '?'
+    print(f"[Rank {rank}] Interrupt received, cleaning up...")
+    cleanup_distributed()
+    sys.exit(0)        
 
 if __name__ == '__main__':
-    mp.set_start_method('spawn', force=True)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     training_loop()
