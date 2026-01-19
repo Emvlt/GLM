@@ -192,7 +192,14 @@ def pretraining_loop():
 
         if is_main_process:
             live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
-            live.log_artifact(str(model_save_path), type="model", name="pretrained_sinogram_model")
+            live.log_artifact(
+                path=str(model_save_path), 
+                type="model", 
+                name="pretrained_sinogram_model",
+                desc="Pretrained model for sinogram processing",
+                labels=['sinogram', 'pretraining'],
+                meta=parameters
+                )
             model_to_save = model.module if world_size > 1 else model
             torch.save(model_to_save.state_dict(), model_save_path)
 

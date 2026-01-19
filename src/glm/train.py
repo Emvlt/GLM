@@ -210,7 +210,7 @@ def training_loop():
                 batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
                 input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
-                target_reconstruction = tensor_dict['preprocessed_image_mode2'].float().to(device)
+                target_reconstruction = tensor_dict['preprocessed_reconstruction_mode2'].float().to(device)
 
                 input_sinogram  = set_data_shape(
                     model = sinogram_model,
@@ -248,11 +248,33 @@ def training_loop():
             dist.all_gather(gathered, validation_tensor)
             if is_main_process:
                 all_validation = torch.cat(gathered).cpu().tolist()
-                validation = all_validation        
+                validation = all_validation
+            plot_image_live(
+                    data = infered_image, 
+                    name = 'infered_image_validation',
+                    title='Infered Image',
+                    extension='jpg',
+                    live_session = live
+                    )
+
+            plot_image_live(
+                    data = target_reconstruction, 
+                    name = 'target_reconstruction_validation',
+                    title='Target Image',
+                    extension='jpg',
+                    live_session = live
+                    )
 
         if is_main_process:
             live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
-            live.log_artifact(str(model_save_path), type="model", name="end_to_end_model")
+            live.log_artifact(
+                str(model_save_path), 
+                type="model", 
+                name="end_to_end_model",
+                desc="Learned reconstruction model with sinogram and image modalities processing",
+                labels=["sinogram", "image", "end-to-end", "learned reconstruction"],
+                meta=parameters
+                )
             sin_model_to_save = sinogram_model.module if world_size > 1 else sinogram_model
             img_model_to_save = image_model.module if world_size > 1 else  image_model
             torch.save({

@@ -53,6 +53,7 @@ def plot_image_live(
         raise NotImplementedError
     
     fig, axs = plt.subplots()
+    axs.axis('off')
     axs.matshow(data)
     if title is not None and isinstance(title, str):
         axs.set_title(title)
