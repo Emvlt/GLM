@@ -7,6 +7,11 @@ data:
   raw_path: /home/emilien/datasets/raw/2detect
   processed_path: /home/emilien/datasets/processed/2detect
 
+experiment:
+  name: end-to-end reconstruction
+  run_id: run_001
+  description: "GLM with 16 channels"
+
 pretrain_parameters:
   hyperparameters:
     learning_rate: 5e-4
