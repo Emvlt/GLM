@@ -1,26 +1,4 @@
 stages:
-  prepare_demo:
-    cmd: uv run python src/glm/preprocess_2detect.py mode2 demo
-    deps:
-    - src/glm/preprocess_2detect.py
-    - src/glm/datasets/raw/2detect
-    params:
-    - demo
-    outs:
-    - src/glm/datasets/processed/2detect
-
-  run_demo:
-    cmd: uv run python src/glm/run_demo.py
-    deps:
-    - src/glm/run_demo.py
-    - src/glm/datasets/processed/2detect
-    params:
-    - demo
-    outs:
-    - src/glm/images/demo/reconstruction.jpg
-    - src/glm/images/demo/sinogram.jpg
-    - src/glm/images/demo/target.jpg
-
   prepare_training:
     cmd: uv run python src/glm/preprocess_2detect.py mode2 train
     deps:
@@ -57,12 +35,12 @@ stages:
 
 params:
 - params.yaml
-
+- dvclive/params.yaml
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
     type: model
-    desc: "Pretrained model for sinogram processing"
+    desc: Pretrained model for sinogram processing
 
   end_to_end_model:
     path: src/glm/saved_models/end_to_end_model.pt
