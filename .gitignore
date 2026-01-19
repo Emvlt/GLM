@@ -9,3 +9,6 @@ wheels/
 # Virtual environments
 .venv
 /dvclive
+
+# Local files
+useful_commands.md
