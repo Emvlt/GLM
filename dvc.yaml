@@ -49,18 +49,21 @@ stages:
     - pretrain_parameters
     - train_parameters
     deps:
-    - src/glm/pretrain.py
     - src/glm/train.py
     - ${data.processed_path}
     - src/glm/saved_models/pretrained_sinogram_model.pt
     outs:
-    - src/glm/saved_models/model.pt
+    - src/glm/saved_models/end_to_end_model.pt
 
 params:
-- dvclive/params.yaml
+- params.yaml
+
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
+    type: model
+  pretrained_sinogram_model:
+    path: src/glm/saved_models/end_to_end_model.pt
     type: model
 metrics:
 - dvclive/metrics.json

@@ -24,9 +24,10 @@ def training_loop():
     is_main_process = rank == 0
 
     # We load the different parameters
-    data_parameters = yaml.safe_load(open("params.yaml"))['data']
-    train_parameters = yaml.safe_load(open("params.yaml"))['train_parameters']
-    pretrain_parameters = yaml.safe_load(open("params.yaml"))['pretrain_parameters']
+    parameters = yaml.safe_load(open("params.yaml"))
+    data_parameters = parameters['data']
+    train_parameters = parameters['train_parameters']
+    pretrain_parameters = parameters['pretrain_parameters']
     # What are the training hyperparameters
     hyperparameters = train_parameters['hyperparameters']
 
@@ -130,7 +131,7 @@ def training_loop():
     try:
         print(f'Running experiments on device {device}')
         if is_main_process:
-            live.log_params(hyperparameters)
+            live.log_params(parameters)
 
         for epoch in range(epochs):
 
@@ -251,7 +252,7 @@ def training_loop():
 
         if is_main_process:
             live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
-            live.log_artifact(str(model_save_path), type="model", name="pretrained_sinogram_model")
+            live.log_artifact(str(model_save_path), type="model", name="end_to_end_model")
             sin_model_to_save = sinogram_model.module if world_size > 1 else sinogram_model
             img_model_to_save = image_model.module if world_size > 1 else  image_model
             torch.save({
