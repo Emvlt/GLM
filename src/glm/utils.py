@@ -1,5 +1,6 @@
 import pathlib
 import os 
+import sys 
 
 import numpy as np
 import torch
@@ -84,3 +85,10 @@ def cleanup_distributed():
     """Clean up distributed training"""
     if dist.is_initialized():
         dist.destroy_process_group()
+
+def signal_handler(sig, frame):
+    """Handle Ctrl+C gracefully"""
+    rank = int(os.environ['RANK']) if 'rank' in locals() else '?'
+    print(f"[Rank {rank}] Interrupt received, cleaning up...")
+    cleanup_distributed()
+    sys.exit(0)     

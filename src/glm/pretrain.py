@@ -1,5 +1,6 @@
 from pathlib import Path
 import os 
+import signal
 
 import yaml
 import torch
@@ -9,7 +10,7 @@ from torch_geometric.data import Batch
 from dvclive import Live
 from statistics import mean
 
-from glm.utils import plot_image_live, setup_distributed, cleanup_distributed
+from glm.utils import plot_image_live, setup_distributed, cleanup_distributed, signal_handler
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, PSNR, set_data_shape)
 
@@ -211,4 +212,6 @@ def pretraining_loop():
         
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     pretraining_loop()

@@ -13,7 +13,7 @@ import torch_geometric
 from dvclive import Live
 from statistics import mean
 
-from glm.utils import plot_image_live, setup_distributed, cleanup_distributed
+from glm.utils import plot_image_live, setup_distributed, cleanup_distributed, signal_handler
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, load_pseudo_inverse_as_module, PSNR, set_data_shape)
 
@@ -285,14 +285,7 @@ def training_loop():
     finally:
         if is_main_process and live is not None:
             live.end()
-        cleanup_distributed()
-
-def signal_handler(sig, frame):
-    """Handle Ctrl+C gracefully"""
-    rank = int(os.environ['RANK']) if 'rank' in locals() else '?'
-    print(f"[Rank {rank}] Interrupt received, cleaning up...")
-    cleanup_distributed()
-    sys.exit(0)        
+        cleanup_distributed()   
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
