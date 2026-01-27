@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import torch
 import torch.distributed as dist
+import matplotlib
 import matplotlib.pyplot as plt
 
 def _process_numpy(data:np.ndarray) -> np.ndarray:
@@ -53,6 +54,7 @@ def plot_image_live(
     else:
         raise NotImplementedError
     
+
     fig, axs = plt.subplots()
     axs.axis('off')
     axs.matshow(data)

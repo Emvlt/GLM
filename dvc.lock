@@ -79,7 +79,7 @@ stages:
       size: 182432320000
       nfiles: 11500
   pretraining:
-    cmd: torchrun --nproc_per_node=2 src/glm/pretrain.py
+    cmd: uv run python src/glm/pretrain.py
     deps:
     - path: /home/emilien/datasets/processed/2detect
       hash: md5
@@ -88,8 +88,8 @@ stages:
       nfiles: 11500
     - path: src/glm/pretrain.py
       hash: md5
-      md5: 8c6981c206d7f0a1abcbf442e2359cdc
-      size: 7730
+      md5: 47dd0270eed007476339e18e8074b583
+      size: 8092
     params:
       params.yaml:
         pretrain_parameters:
@@ -119,10 +119,10 @@ stages:
     outs:
     - path: dvclive
       hash: md5
-      md5: 732ec4c99b55719f3c0a84c4f8400731.dir
-      size: 46760
+      md5: 80254000a8cb786169cc0009537e1aeb.dir
+      size: 50676
       nfiles: 7
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 1c95c22ca7d997538bd46fcc1873995a
+      md5: 46225d2cf1277ca45aab6b74d70a0b0c
       size: 28291

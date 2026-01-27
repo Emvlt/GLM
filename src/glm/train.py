@@ -266,7 +266,7 @@ def training_loop():
                     )
 
         if is_main_process:
-            live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
+            live.log_metric("training/validation/PSNR_loss", mean(validation))
             live.log_artifact(
                 str(model_save_path), 
                 type="model", 

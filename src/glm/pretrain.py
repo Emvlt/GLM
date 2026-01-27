@@ -176,7 +176,7 @@ def pretraining_loop():
                 if graph is None:
                     infered_sinogram = model(input_sinogram)
                 else:
-                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] )
+                    graphs = Batch.from_data_list([graph for sample_index in range(batch_size)]).to(device)
                     infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
                 validation.append(
