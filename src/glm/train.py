@@ -126,7 +126,7 @@ def training_loop():
     model_save_path = Path('src/glm/saved_models/model.pt')
     model_save_path.parent.mkdir(exist_ok=True)
 
-    live = Live(save_dvc_exp=True, dir="dvclive") if is_main_process else None
+    live = Live(save_dvc_exp=True, dir="dvclive/training") if is_main_process else None
 
     try:
         print(f'Running experiments on device {device}')
@@ -180,9 +180,8 @@ def training_loop():
 
                 if is_main_process:
                     current_psnr = psnr(infered_image, target_reconstruction)
-                    live.log_metric(
-                        "training/PSNR", current_psnr.item())
-                    live.log_metric("training/loss", loss.item())
+                    live.log_metric("PSNR", current_psnr.item())
+                    live.log_metric("MSE loss", loss.item())
                     live.next_step()
             
                 if is_main_process and index %50==0:
@@ -266,7 +265,7 @@ def training_loop():
                     )
 
         if is_main_process:
-            live.log_metric("training/validation/PSNR_loss", mean(validation))
+            live.log_metric("Validation PSNR", mean(validation))
             live.log_artifact(
                 str(model_save_path), 
                 type="model", 

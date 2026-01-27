@@ -94,7 +94,7 @@ def pretraining_loop():
     model_save_path = Path('src/glm/saved_models/pretrained_sinogram_model.pt')
     model_save_path.parent.mkdir(exist_ok=True)
 
-    live = Live(save_dvc_exp=True, dir="dvclive") if is_main_process else None
+    live = Live(save_dvc_exp=True, dir="dvclive/pretraining") if is_main_process else None
 
     try:
         print(f'Running experiments on device {device}')
@@ -135,9 +135,8 @@ def pretraining_loop():
 
                 if is_main_process:
                     current_psnr = psnr(infered_sinogram, input_sinogram)
-                    live.log_metric(
-                        "pretraining/training/PSNR", current_psnr.item())
-                    live.log_metric("pretraining/training/loss", loss.item())
+                    live.log_metric("PSNR", current_psnr.item())
+                    live.log_metric("MSE loss", loss.item())
                     live.next_step()
             
                 if is_main_process and index %50==0:
@@ -192,7 +191,7 @@ def pretraining_loop():
                 validation = all_validation        
 
         if is_main_process:
-            live.log_metric("pretraining/validation/PSNR_loss", mean(validation))
+            live.log_metric("Validation PSNR", mean(validation))
             live.log_artifact(
                 path=str(model_save_path), 
                 type="model", 
