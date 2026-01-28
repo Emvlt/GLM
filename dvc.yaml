@@ -37,6 +37,8 @@ stages:
 params:
 - params.yaml
 - dvclive/params.yaml
+- dvclive/pretraining/params.yaml
+- dvclive/training/params.yaml
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
@@ -58,7 +60,7 @@ artifacts:
           kernel_size: 7
           kernel_dimension: 1
           padding: 3
-          n_channels: 16
+          n_channels: 24
           normalize: true
           improved: true
           cached: false
@@ -89,8 +91,8 @@ artifacts:
         processed_path: /home/emilien/datasets/processed/2detect
       experiment:
         name: end-to-end reconstruction
-        run_id: run_001
-        description: GLM with 16 channels
+        run_id: run_002
+        description: GLM with 24 channels
       pretrain_parameters:
         hyperparameters:
           learning_rate: '5e-4'
@@ -104,7 +106,7 @@ artifacts:
             kernel_size: 7
             kernel_dimension: 1
             padding: 3
-            n_channels: 16
+            n_channels: 24
             normalize: true
             improved: true
             cached: false
@@ -142,7 +144,15 @@ artifacts:
             padding: 3
 metrics:
 - dvclive/metrics.json
+- dvclive/pretraining/metrics.json
+- dvclive/training/metrics.json
 plots:
 - dvclive/plots/metrics:
     x: step
 - dvclive/plots/images
+- dvclive/pretraining/plots/metrics:
+    x: step
+- dvclive/pretraining/plots/images
+- dvclive/training/plots/metrics:
+    x: step
+- dvclive/training/plots/images

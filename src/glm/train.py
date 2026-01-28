@@ -240,6 +240,7 @@ def training_loop():
                 validation.append(
                     psnr(infered_image, target_reconstruction).item()
                     )
+                live.log_metric("Validation PSNR", mean(validation))
                 
         if world_size > 1:
             validation_tensor = torch.tensor(validation, device=device)
@@ -265,7 +266,6 @@ def training_loop():
                     )
 
         if is_main_process:
-            live.log_metric("Validation PSNR", mean(validation))
             live.log_artifact(
                 str(model_save_path), 
                 type="model", 
