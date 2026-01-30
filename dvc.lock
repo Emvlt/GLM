@@ -99,7 +99,7 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: GLM
+          active_model: sinogram_CNN
           models:
             GLM:
               kernel_size: 7
@@ -119,13 +119,13 @@ stages:
     outs:
     - path: dvclive/pretraining
       hash: md5
-      md5: d7491f3c3a3a01bed7b708936d01fa9c.dir
-      size: 49892
+      md5: 5c22e0c7b310316111936cdfc6a89b99.dir
+      size: 51145
       nfiles: 7
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: fddd584e36489921bdde932dbad8c1fa
-      size: 55555
+      md5: 1386fb1268459cb81dd26bee6dd6cb31
+      size: 354115
   training:
     cmd: uv run python src/glm/train.py
     deps:
@@ -136,8 +136,8 @@ stages:
       nfiles: 11500
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: fddd584e36489921bdde932dbad8c1fa
-      size: 55555
+      md5: 1386fb1268459cb81dd26bee6dd6cb31
+      size: 354115
     - path: src/glm/train.py
       hash: md5
       md5: e1c7cc846720c435a1250cbf483d803d
@@ -151,7 +151,7 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: GLM
+          active_model: sinogram_CNN
           models:
             GLM:
               kernel_size: 7
@@ -196,10 +196,10 @@ stages:
     outs:
     - path: dvclive/training
       hash: md5
-      md5: e2cb30ef9f0ec01af81fb3857169f297.dir
-      size: 1050439
+      md5: 3c653e96ad98e89b23b39612bb3d9649.dir
+      size: 1051736
       nfiles: 7
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: 25802da665e1be1d91d0a21fd051dbe6
-      size: 270013
+      md5: cdcdc08c2089f15ec9558c0a4ccca3b1
+      size: 568573
