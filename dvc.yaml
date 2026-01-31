@@ -70,7 +70,7 @@ artifacts:
           kernel_size: 7
           kernel_dimension: 2
           padding: 3
-          n_channels: 24
+          n_channels: 16
   end_to_end_model:
     path: src/glm/saved_models/model.pt
     type: model
@@ -91,8 +91,8 @@ artifacts:
         processed_path: /home/emilien/datasets/processed/2detect
       experiment:
         name: end-to-end reconstruction
-        run_id: run_002
-        description: GLM with 24 channels
+        run_id: run_004
+        description: CNN with 16 channels
       pretrain_parameters:
         hyperparameters:
           learning_rate: '5e-4'
@@ -116,7 +116,7 @@ artifacts:
             kernel_size: 7
             kernel_dimension: 2
             padding: 3
-            n_channels: 24
+            n_channels: 16
       train_parameters:
         hyperparameters:
           learning_rate: '5e-5'
