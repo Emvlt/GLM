@@ -34,6 +34,18 @@ stages:
     - dvclive/training
     - src/glm/saved_models/model.pt
 
+  evaluate:
+    cmd: uv run python src/glm/evaluate.py
+    deps:
+    - src/glm/evaluate.py
+    - src/glm/saved_models/model.pt
+    params:
+    - pretrain_parameters
+    - train_parameters
+    - evaluate_parameters
+    outs:
+    - dvclive/evaluate
+
 params:
 - params.yaml
 - dvclive/params.yaml
@@ -146,6 +158,7 @@ metrics:
 - dvclive/metrics.json
 - dvclive/pretraining/metrics.json
 - dvclive/training/metrics.json
+- dvclive/evaluate/metrics.json
 plots:
 - dvclive/plots/metrics:
     x: step
@@ -156,3 +169,5 @@ plots:
 - dvclive/training/plots/metrics:
     x: step
 - dvclive/training/plots/images
+- dvclive/evaluate/plots/metrics:
+    x: step

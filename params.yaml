@@ -10,7 +10,7 @@ data:
 experiment:
   name: end-to-end reconstruction
   run_id: run_004
-  description: "CNN with 16 channels"
+  description: CNN with 16 channels
 
 pretrain_parameters:
   hyperparameters:
@@ -66,3 +66,7 @@ train_parameters:
       kernel_size: 7
       padding: 3
 
+evaluate_parameters:
+  downsampling: 1
+  batch_size: 8
+  num_workers: 1
