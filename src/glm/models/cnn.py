@@ -39,10 +39,11 @@ class CNN_Module(nn.Module):
                        n_measurements,
                        n_pixels,
                        input_tensor:torch.Tensor, target:str):
-        if angles_indices is not None:
-            input_tensor = input_tensor[:,:,angles_indices, :]
         if target == 'NN':
             assert len(input_tensor.size()) == 4
+            if angles_indices is not None:
+                i = int(3600/n_measurements)
+                input_tensor = input_tensor[:,:,::i, :]
             if self.dimension == 1:
                 return input_tensor.view(bs*n_measurements, 1, n_pixels)
             elif self.dimension == 2 : 
