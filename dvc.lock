@@ -88,8 +88,8 @@ stages:
       nfiles: 11500
     - path: src/glm/pretrain.py
       hash: md5
-      md5: 47dd0270eed007476339e18e8074b583
-      size: 8092
+      md5: 099f4ed8644e75c4d6aa34fa723f6b63
+      size: 8024
     params:
       params.yaml:
         pretrain_parameters:
@@ -105,7 +105,7 @@ stages:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 16
+              n_channels: 24
               normalize: true
               improved: true
               cached: false
@@ -119,13 +119,13 @@ stages:
     outs:
     - path: dvclive/pretraining
       hash: md5
-      md5: d751713988987e9331980363e24189ce.dir
-      size: 0
-      nfiles: 0
+      md5: d7491f3c3a3a01bed7b708936d01fa9c.dir
+      size: 49892
+      nfiles: 7
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 46225d2cf1277ca45aab6b74d70a0b0c
-      size: 28291
+      md5: fddd584e36489921bdde932dbad8c1fa
+      size: 55555
   training:
     cmd: uv run python src/glm/train.py
     deps:
@@ -136,12 +136,12 @@ stages:
       nfiles: 11500
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 46225d2cf1277ca45aab6b74d70a0b0c
-      size: 28291
+      md5: fddd584e36489921bdde932dbad8c1fa
+      size: 55555
     - path: src/glm/train.py
       hash: md5
-      md5: 458edf1316aadbd501a624ef7e9b3345
-      size: 11566
+      md5: e1c7cc846720c435a1250cbf483d803d
+      size: 11526
     params:
       params.yaml:
         pretrain_parameters:
@@ -157,7 +157,7 @@ stages:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 16
+              n_channels: 24
               normalize: true
               improved: true
               cached: false
@@ -196,13 +196,13 @@ stages:
     outs:
     - path: dvclive/training
       hash: md5
-      md5: d751713988987e9331980363e24189ce.dir
-      size: 0
-      nfiles: 0
+      md5: e2cb30ef9f0ec01af81fb3857169f297.dir
+      size: 1050439
+      nfiles: 7
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: a47210bd8627ae3e849193cb12844978
-      size: 242365
+      md5: 25802da665e1be1d91d0a21fd051dbe6
+      size: 270013
   evaluate:
     cmd: uv run python src/glm/evaluate.py
     deps:
@@ -212,8 +212,8 @@ stages:
       size: 7156
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: a47210bd8627ae3e849193cb12844978
-      size: 242365
+      md5: 25802da665e1be1d91d0a21fd051dbe6
+      size: 270013
     params:
       params.yaml:
         evaluate_parameters:
@@ -233,7 +233,7 @@ stages:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 16
+              n_channels: 24
               normalize: true
               improved: true
               cached: false
@@ -272,6 +272,6 @@ stages:
     outs:
     - path: dvclive/evaluate
       hash: md5
-      md5: 7ac0e27b7e00c381fbff912015c8c1cc.dir
-      size: 168
+      md5: af980ac5516cdfd39e483fc0ab20b545.dir
+      size: 166
       nfiles: 4
