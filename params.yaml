@@ -19,14 +19,14 @@ pretrain_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
-  active_model: sinogram_CNN
+  active_model: GLM
   models:
     GLM:
       # CNN parameters
       kernel_size: 7
       kernel_dimension: 1
       padding: 3
-      n_channels: 24
+      n_channels: 16
       # GNN parameters
       normalize: true
       improved: true

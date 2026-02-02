@@ -88,8 +88,8 @@ stages:
       nfiles: 11500
     - path: src/glm/pretrain.py
       hash: md5
-      md5: 099f4ed8644e75c4d6aa34fa723f6b63
-      size: 8024
+      md5: 47dd0270eed007476339e18e8074b583
+      size: 8092
     params:
       params.yaml:
         pretrain_parameters:
@@ -99,13 +99,13 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: sinogram_CNN
+          active_model: GLM
           models:
             GLM:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 24
+              n_channels: 16
               normalize: true
               improved: true
               cached: false
@@ -115,17 +115,17 @@ stages:
               kernel_size: 7
               kernel_dimension: 2
               padding: 3
-              n_channels: 16
+              n_channels: 24
     outs:
     - path: dvclive/pretraining
       hash: md5
-      md5: c7618aa1229a052cfe26172c15fed530.dir
-      size: 50324
-      nfiles: 7
+      md5: d751713988987e9331980363e24189ce.dir
+      size: 0
+      nfiles: 0
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 5e98ed9a05f9e8434f8ec28183470a35
-      size: 162883
+      md5: 46225d2cf1277ca45aab6b74d70a0b0c
+      size: 28291
   training:
     cmd: uv run python src/glm/train.py
     deps:
@@ -136,12 +136,12 @@ stages:
       nfiles: 11500
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: 5e98ed9a05f9e8434f8ec28183470a35
-      size: 162883
+      md5: 46225d2cf1277ca45aab6b74d70a0b0c
+      size: 28291
     - path: src/glm/train.py
       hash: md5
-      md5: e1c7cc846720c435a1250cbf483d803d
-      size: 11526
+      md5: 458edf1316aadbd501a624ef7e9b3345
+      size: 11566
     params:
       params.yaml:
         pretrain_parameters:
@@ -151,13 +151,13 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: sinogram_CNN
+          active_model: GLM
           models:
             GLM:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 24
+              n_channels: 16
               normalize: true
               improved: true
               cached: false
@@ -167,7 +167,7 @@ stages:
               kernel_size: 7
               kernel_dimension: 2
               padding: 3
-              n_channels: 16
+              n_channels: 24
         train_parameters:
           hyperparameters:
             learning_rate: 5e-05
@@ -196,13 +196,13 @@ stages:
     outs:
     - path: dvclive/training
       hash: md5
-      md5: 31919ceed412dc2a9c526f51d0832f30.dir
-      size: 1051630
-      nfiles: 7
+      md5: d751713988987e9331980363e24189ce.dir
+      size: 0
+      nfiles: 0
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: 41ca042b656e61804c3cb4ed05f3a92d
-      size: 376957
+      md5: a47210bd8627ae3e849193cb12844978
+      size: 242365
   evaluate:
     cmd: uv run python src/glm/evaluate.py
     deps:
@@ -212,8 +212,8 @@ stages:
       size: 7156
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: 41ca042b656e61804c3cb4ed05f3a92d
-      size: 376957
+      md5: a47210bd8627ae3e849193cb12844978
+      size: 242365
     params:
       params.yaml:
         evaluate_parameters:
@@ -227,13 +227,13 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: sinogram_CNN
+          active_model: GLM
           models:
             GLM:
               kernel_size: 7
               kernel_dimension: 1
               padding: 3
-              n_channels: 24
+              n_channels: 16
               normalize: true
               improved: true
               cached: false
@@ -272,6 +272,6 @@ stages:
     outs:
     - path: dvclive/evaluate
       hash: md5
-      md5: 328efa0fb367af3dd27baf3ca2d85e05.dir
-      size: 166
+      md5: 7ac0e27b7e00c381fbff912015c8c1cc.dir
+      size: 168
       nfiles: 4

@@ -13,7 +13,6 @@ stages:
   pretraining:
     cmd: uv run python src/glm/pretrain.py
     deps:
-    - src/glm/pretrain.py
     - ${data.processed_path}
     params:
     - pretrain_parameters
@@ -27,7 +26,6 @@ stages:
     - pretrain_parameters
     - train_parameters
     deps:
-    - src/glm/train.py
     - ${data.processed_path}
     - src/glm/saved_models/pretrained_sinogram_model.pt
     outs:
