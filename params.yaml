@@ -67,6 +67,6 @@ train_parameters:
       padding: 3
 
 evaluate_parameters:
-  downsampling: 1
+  downsampling: 10
   batch_size: 8
   num_workers: 1

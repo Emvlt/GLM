@@ -48,9 +48,9 @@ stages:
 
 params:
 - params.yaml
-- dvclive/params.yaml
 - dvclive/pretraining/params.yaml
 - dvclive/training/params.yaml
+- dvclive/evaluate/params.yaml
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
@@ -155,14 +155,10 @@ artifacts:
             kernel_size: 7
             padding: 3
 metrics:
-- dvclive/metrics.json
 - dvclive/pretraining/metrics.json
 - dvclive/training/metrics.json
 - dvclive/evaluate/metrics.json
 plots:
-- dvclive/plots/metrics:
-    x: step
-- dvclive/plots/images
 - dvclive/pretraining/plots/metrics:
     x: step
 - dvclive/pretraining/plots/images

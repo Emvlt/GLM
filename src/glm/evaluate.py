@@ -188,6 +188,8 @@ def evaluate_loop():
         live.log_param('Downsampling', downsampling)
         
     finally:
+        if is_main_process and live is not None:
+            live.end()
         cleanup_distributed()   
 
 

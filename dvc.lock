@@ -208,8 +208,8 @@ stages:
     deps:
     - path: src/glm/evaluate.py
       hash: md5
-      md5: b5d96eaee997ce164b7ad1d42435bf5d
-      size: 7084
+      md5: f41f42c5b243f0c077e5d49f20db0828
+      size: 7156
     - path: src/glm/saved_models/model.pt
       hash: md5
       md5: 41ca042b656e61804c3cb4ed05f3a92d
@@ -217,7 +217,7 @@ stages:
     params:
       params.yaml:
         evaluate_parameters:
-          downsampling: 1
+          downsampling: 10
           batch_size: 8
           num_workers: 1
         pretrain_parameters:
@@ -272,6 +272,6 @@ stages:
     outs:
     - path: dvclive/evaluate
       hash: md5
-      md5: 51f7df9f2723038feb03a6b59dd607bf.dir
-      size: 88
-      nfiles: 3
+      md5: 328efa0fb367af3dd27baf3ca2d85e05.dir
+      size: 166
+      nfiles: 4
