@@ -1,16 +1,4 @@
 stages:
-  prepare_training:
-    cmd: uv run python src/glm/preprocess_2detect.py
-    frozen: true
-    deps:
-    - src/glm/preprocess_2detect.py
-    - ${data.raw_path}
-    params:
-    - data
-    outs:
-    - ${data.processed_path}:
-        cache: false
-
   pretraining:
     cmd: uv run python src/glm/pretrain.py
     params:
