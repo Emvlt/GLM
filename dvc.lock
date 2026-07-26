@@ -56,28 +56,28 @@ stages:
       md5: 3d40d439da4a3c4e4f7cf1ce7a749f74
       size: 20319
   prepare_training:
-    cmd: uv run python src/glm/preprocess_2detect.py mode2 train
+    cmd: uv run python src/glm/preprocess_2detect.py train
     deps:
-    - path: /home/emilien/datasets/raw/2detect
+    - path: /media/Store-HDD/emilien_temp/raw/2detect
       hash: md5
-      md5: e4ac8fdf7a5d8002a946f8b988c777d5.dir
-      size: 316154324027
-      nfiles: 92001
+      md5: 70a3bb98868091186c1dc8e7c3bfd707.dir
+      size: 466547236513
+      nfiles: 80010
     - path: src/glm/preprocess_2detect.py
       hash: md5
-      md5: 55e400fc88c0fa959bb7d81cbc86ba39
-      size: 2717
+      md5: 68ccc17ff4222f66ce1ad520cd615d06
+      size: 2053
     params:
       params.yaml:
         data:
-          raw_path: /home/emilien/datasets/raw/2detect
-          processed_path: /home/emilien/datasets/processed/2detect
+          raw_path: /media/Store-HDD/emilien_temp/raw/2detect
+          processed_path: /media/Store-HDD/emilien_temp/processed/2detect
     outs:
-    - path: /home/emilien/datasets/processed/2detect
+    - path: /media/Store-HDD/emilien_temp/processed/2detect
       hash: md5
-      md5: c9b5188af6c5685168104b496816ee67.dir
-      size: 182432320000
-      nfiles: 11500
+      md5: a674bba13773e535a99ea4eb7a5afc28.dir
+      size: 475910400000
+      nfiles: 30000
   pretraining:
     cmd: uv run python src/glm/pretrain.py
     deps:
@@ -99,7 +99,7 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: GLM
+          active_model: sinogram_CNN
           models:
             GLM:
               kernel_size: 7
@@ -119,13 +119,13 @@ stages:
     outs:
     - path: dvclive/pretraining
       hash: md5
-      md5: d7491f3c3a3a01bed7b708936d01fa9c.dir
-      size: 49892
+      md5: 5c22e0c7b310316111936cdfc6a89b99.dir
+      size: 51145
       nfiles: 7
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: fddd584e36489921bdde932dbad8c1fa
-      size: 55555
+      md5: 1386fb1268459cb81dd26bee6dd6cb31
+      size: 354115
   training:
     cmd: uv run python src/glm/train.py
     deps:
@@ -136,8 +136,8 @@ stages:
       nfiles: 11500
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
-      md5: fddd584e36489921bdde932dbad8c1fa
-      size: 55555
+      md5: 1386fb1268459cb81dd26bee6dd6cb31
+      size: 354115
     - path: src/glm/train.py
       hash: md5
       md5: e1c7cc846720c435a1250cbf483d803d
@@ -151,7 +151,7 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: GLM
+          active_model: sinogram_CNN
           models:
             GLM:
               kernel_size: 7
@@ -196,13 +196,13 @@ stages:
     outs:
     - path: dvclive/training
       hash: md5
-      md5: e2cb30ef9f0ec01af81fb3857169f297.dir
-      size: 1050439
+      md5: 3c653e96ad98e89b23b39612bb3d9649.dir
+      size: 1051736
       nfiles: 7
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: 25802da665e1be1d91d0a21fd051dbe6
-      size: 270013
+      md5: cdcdc08c2089f15ec9558c0a4ccca3b1
+      size: 568573
   evaluate:
     cmd: uv run python src/glm/evaluate.py
     deps:
@@ -212,8 +212,8 @@ stages:
       size: 7156
     - path: src/glm/saved_models/model.pt
       hash: md5
-      md5: 25802da665e1be1d91d0a21fd051dbe6
-      size: 270013
+      md5: cdcdc08c2089f15ec9558c0a4ccca3b1
+      size: 568573
     params:
       params.yaml:
         evaluate_parameters:
@@ -227,7 +227,7 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
-          active_model: GLM
+          active_model: sinogram_CNN
           models:
             GLM:
               kernel_size: 7
@@ -243,7 +243,7 @@ stages:
               kernel_size: 7
               kernel_dimension: 2
               padding: 3
-              n_channels: 16
+              n_channels: 24
         train_parameters:
           hyperparameters:
             learning_rate: 5e-05
@@ -272,6 +272,74 @@ stages:
     outs:
     - path: dvclive/evaluate
       hash: md5
-      md5: af980ac5516cdfd39e483fc0ab20b545.dir
-      size: 166
+      md5: 0274a8588bcf4e8152377fc3584fa858.dir
+      size: 168
+      nfiles: 4
+  evaluate_FBP:
+    cmd: uv run python src/glm/evaluate_FBP.py
+    deps:
+    - path: src/glm/evaluate_FBP.py
+      hash: md5
+      md5: a3373bef4b136e6328e02d93e95ccde9
+      size: 4889
+    params:
+      params.yaml:
+        evaluate_parameters:
+          downsampling: 10
+          batch_size: 8
+          num_workers: 1
+        pretrain_parameters:
+          hyperparameters:
+            learning_rate: 0.0005
+            epochs: 1
+            batch_size: 8
+            num_workers: 2
+            downsampling: 1
+          active_model: sinogram_CNN
+          models:
+            GLM:
+              kernel_size: 7
+              kernel_dimension: 1
+              padding: 3
+              n_channels: 24
+              normalize: true
+              improved: true
+              cached: false
+              add_self_loops: true
+              aggr: add
+            sinogram_CNN:
+              kernel_size: 7
+              kernel_dimension: 2
+              padding: 3
+              n_channels: 24
+        train_parameters:
+          hyperparameters:
+            learning_rate: 5e-05
+            epochs: 40
+            batch_size: 8
+            num_workers: 2
+            downsampling: 1
+          active_pseudo_inverse: filtered_backprojection
+          pseudo_inverse:
+            backprojection:
+              n_voxels: 1024
+              impl: pytorch
+            filtered_backprojection:
+              n_voxels: 1024
+              impl: pytorch
+              filter_name: Ram-Lak
+          active_image_model: image_CNN
+          image_models:
+            image_CNN:
+              n_channels: 32
+              in_channels: 1
+              out_channels: 1
+              kernel_dimension: 2
+              kernel_size: 7
+              padding: 3
+    outs:
+    - path: dvclive/evaluate_FBP
+      hash: md5
+      md5: ecfa4a365a9fe6258aa4fc4286cc089e.dir
+      size: 168
       nfiles: 4
