@@ -7,11 +7,6 @@ data:
   raw_path: /media/Store-HDD/emilien_temp/raw/2detect
   processed_path: /media/Store-HDD/emilien_temp/processed/2detect
 
-experiment:
-  name: end-to-end reconstruction
-  run_id: run_004
-  description: CNN with 16 channels
-
 seed: 1
 
 pretrain_parameters:
