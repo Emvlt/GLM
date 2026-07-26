@@ -1,16 +1,12 @@
 from pathlib import Path
-import os 
-import signal
 
 import yaml
 import torch
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
 from torch_geometric.data import Batch
 from dvclive import Live
 from statistics import mean
 
-from glm.utils import plot_image_live#, setup_distributed, cleanup_distributed, signal_handler
+from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, PSNR, set_data_shape)
 
@@ -29,7 +25,6 @@ def pretraining_loop():
     # Instanciate the device object
     device = torch.device(f'cuda:0')
 
-    print('Seting up distributed learning:')
     print(f'\t device: {device}')
 
     # We load the geometry object
@@ -80,6 +75,14 @@ def pretraining_loop():
     model_save_path = Path('src/glm/saved_models/pretrained_sinogram_model.pt')
     model_save_path.parent.mkdir(exist_ok=True)
 
+    # The dataloaders use drop_last=True, so batch_size is constant across
+    # every iteration below: the batched graph can be built once and reused.
+    graphs = None
+    if graph is not None:
+        graphs = Batch.from_data_list(
+            [graph for _ in range(hyperparameters['batch_size'])]
+            ).to(device)
+
     live = Live(save_dvc_exp=True, dir="dvclive/pretraining")
 
     print(f'Running experiments on device {device}')
@@ -106,7 +109,6 @@ def pretraining_loop():
             if graph is None:
                 infered_sinogram = model(input_sinogram)
             else:
-                graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] ).to(device)
                 infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
             
@@ -155,7 +157,6 @@ def pretraining_loop():
             if graph is None:
                 infered_sinogram = model(input_sinogram)
             else:
-                graphs = Batch.from_data_list([graph for sample_index in range(batch_size)]).to(device)
                 infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
             validation.append(

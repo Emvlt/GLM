@@ -1,19 +1,12 @@
 from pathlib import Path
-import os 
-import sys
-import signal
-import torch.multiprocessing as mp
 
 import yaml
 import torch
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
 from torch_geometric.data import Batch
-import torch_geometric
 from dvclive import Live
 from statistics import mean
 
-from glm.utils import plot_image_live #, setup_distributed, cleanup_distributed, signal_handler
+from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, load_pseudo_inverse_as_module, PSNR, set_data_shape)
 
@@ -83,7 +76,7 @@ def training_loop():
             ('preprocessed_reconstruction', 'mode2')
             ],
         batch_size=hyperparameters['batch_size'],
-        num_workers=0
+        num_workers=hyperparameters['num_workers']
     )
     validation_dataloader = parse_dataloader(
         dataset_path = data_parameters['processed_path'],
@@ -107,7 +100,15 @@ def training_loop():
     model_save_path = Path('src/glm/saved_models/model.pt')
     model_save_path.parent.mkdir(exist_ok=True)
 
-    live = Live(save_dvc_exp=True, dir="dvclive/training") 
+    # The dataloaders use drop_last=True, so batch_size is constant across
+    # every iteration below: the batched graph can be built once and reused.
+    graphs = None
+    if graph is not None:
+        graphs = Batch.from_data_list(
+            [graph for _ in range(hyperparameters['batch_size'])]
+            ).to(device)
+
+    live = Live(save_dvc_exp=True, dir="dvclive/training")
 
 
     print(f'Running experiments on device {device}')
@@ -136,7 +137,6 @@ def training_loop():
             if graph is None:
                 infered_sinogram = sinogram_model(input_sinogram)
             else:
-                graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] ).to(device)
                 infered_sinogram = sinogram_model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
             infered_sinogram = set_data_shape(
@@ -198,7 +198,6 @@ def training_loop():
             if graph is None:
                 infered_sinogram = sinogram_model(input_sinogram)
             else:
-                graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] ).to(device)
                 infered_sinogram = sinogram_model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
             infered_sinogram = set_data_shape(

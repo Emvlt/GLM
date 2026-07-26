@@ -1,11 +1,7 @@
 import pathlib
-import os 
-import sys 
 
 import numpy as np
 import torch
-import torch.distributed as dist
-import matplotlib
 import matplotlib.pyplot as plt
 
 def _process_numpy(data:np.ndarray) -> np.ndarray:
@@ -61,36 +57,3 @@ def plot_image_live(
     if title is not None and isinstance(title, str):
         axs.set_title(title)
     live_session.log_image(f"{name}.{extension}", fig)
-
-# def setup_distributed():
-#     """Initialize distributed training"""
-#     if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
-#         rank = int(os.environ['RANK'])
-#         world_size = int(os.environ['WORLD_SIZE'])
-#         local_rank = int(os.environ['LOCAL_RANK'])
-#     else:
-#         print("WARNING: distributed environment variables not found. Defaulting to single process.")
-#         rank = 0
-#         world_size = 1
-#         local_rank = 0
-    
-#     if world_size > 1:
-#         print(f'Initialising process group on device {local_rank}')
-#         acc = torch.accelerator.current_accelerator()
-#         backend = torch.distributed.get_default_backend_for_device(acc)
-#         # initialize the process group
-#         dist.init_process_group(backend, rank=rank, world_size=world_size, init_method='env://')
-    
-#     return rank, world_size, local_rank
-
-# def cleanup_distributed():
-#     """Clean up distributed training"""
-#     if dist.is_initialized():
-#         dist.destroy_process_group()
-
-# def signal_handler(sig, frame):
-#     """Handle Ctrl+C gracefully"""
-#     rank = int(os.environ['RANK']) if 'rank' in locals() else '?'
-#     print(f"[Rank {rank}] Interrupt received, cleaning up...")
-#     cleanup_distributed()
-#     sys.exit(0)     

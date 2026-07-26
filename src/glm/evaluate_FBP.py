@@ -1,25 +1,13 @@
-from pathlib import Path
-import os 
-import sys
-import signal
-import torch.multiprocessing as mp
-
 import yaml
 import torch
-import torch.distributed as dist
-from torch_geometric.data import Batch
 from ignite.metrics import PSNR, SSIM
 from ignite.handlers.tqdm_logger import ProgressBar
-from ignite.engine import Engine, Events
-
-import pandas as pd 
+from ignite.engine import Engine
 
 from dvclive.live import Live
-from torchvision.utils import save_image, make_grid
 
-from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
-from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, load_pseudo_inverse_as_module, set_data_shape)
+from glm.models.utils import (get_angles_list_from_downsampling, load_geometry, load_pseudo_inverse_as_module)
 
 def normalise(x:torch.Tensor) -> torch.Tensor:
     return (x-x.min()) / (x.max()-x.min())
@@ -29,7 +17,6 @@ def evaluate_loop():
     parameters = yaml.safe_load(open("params.yaml"))
     data_parameters = parameters['data']
     train_parameters = parameters['train_parameters']
-    pretrain_parameters = parameters['pretrain_parameters']
     evaluate_parameters = parameters['evaluate_parameters']
 
     # Set the seed for reproducibility
@@ -44,7 +31,6 @@ def evaluate_loop():
     # We load the geometry object
     downsampling = evaluate_parameters['downsampling']
     angles_indices = get_angles_list_from_downsampling(downsampling)
-    n_measurements = 3600 if angles_indices is None else len(angles_indices)
     geometry = load_geometry(angles_indices)
 
     # Now the models

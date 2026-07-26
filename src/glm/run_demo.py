@@ -1,14 +1,12 @@
-import sys 
+import sys
 import pathlib
-import yaml 
+import yaml
 
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
 
 from odl.contrib.torch.operator import OperatorModule
-from odl.contrib.graphs.graph_interface import create_graph_from_geometry
-from odl.contrib.datasets.ct.detect import detect_geometry, detect_ray_trafo, preprocess_sinogram
+from odl.contrib.datasets.ct.detect import detect_ray_trafo
 
 from glm.utils import plot_image
 
@@ -22,11 +20,6 @@ def main():
     processed_path = pathlib.Path(parameters['demo']['data']['processed_path'])
 
     ray_transform = detect_ray_trafo(impl='numpy', device='cpu')
-
-    graph = create_graph_from_geometry(
-        geometry = detect_geometry(n_voxels = 512), 
-        scheme   = 'GLM', 
-        backend  = 'torch_geometric')
 
     sinogram = np.load(processed_path.joinpath('slice00001/mode2/preprocessed_sinogram.npy'))
     target = np.load(processed_path.joinpath('slice00001/mode2/preprocessed_reconstruction.npy'))

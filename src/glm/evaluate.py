@@ -1,24 +1,12 @@
-from pathlib import Path
-import os 
-import sys
-import signal
-import torch.multiprocessing as mp
-
 import yaml
 import torch
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
 from torch_geometric.data import Batch
 from ignite.metrics import PSNR, SSIM
 from ignite.contrib.handlers import ProgressBar
-from ignite.engine import Engine, Events
-
-import pandas as pd 
+from ignite.engine import Engine
 
 from dvclive import Live
-from torchvision.utils import save_image, make_grid
 
-from glm.utils import plot_image_live #, setup_distributed, cleanup_distributed, signal_handler
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, load_pseudo_inverse_as_module, set_data_shape)
 
@@ -93,6 +81,14 @@ def evaluate_loop():
         num_workers=evaluate_parameters['num_workers']
     )
 
+    # The dataloader uses drop_last=True, so batch_size is constant across
+    # every batch below: the batched graph can be built once and reused.
+    graphs = None
+    if graph is not None:
+        graphs = Batch.from_data_list(
+            [graph for _ in range(evaluate_parameters['batch_size'])]
+            ).to(device)
+
     def eval_step(engine, batch):
         batch_size = batch['preprocessed_sinogram_mode2'].size(0)
 
@@ -110,7 +106,6 @@ def evaluate_loop():
         if graph is None:
             infered_sinogram = sinogram_model(input_sinogram)
         else:
-            graphs = Batch.from_data_list([graph for sample_index in range(batch_size)] ).to(device)
             infered_sinogram = sinogram_model(input_sinogram, graphs.edge_index, graphs.edge_weight)
 
         infered_sinogram = set_data_shape(

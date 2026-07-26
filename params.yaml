@@ -4,13 +4,15 @@ demo:
     processed_path: src/glm/datasets/processed/2detect
 
 data:
-  raw_path: /home/emilien/datasets/raw/2detect
-  processed_path: /home/emilien/datasets/processed/2detect
+  raw_path: /media/Store-HDD/emilien_temp/raw/2detect
+  processed_path: /media/Store-HDD/emilien_temp/processed/2detect
 
 experiment:
   name: end-to-end reconstruction
   run_id: run_004
   description: CNN with 16 channels
+
+seed: 1
 
 pretrain_parameters:
   hyperparameters:
@@ -19,14 +21,14 @@ pretrain_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
-  active_model: GLM
+  active_model: sinogram_CNN
   models:
     GLM:
       # CNN parameters
       kernel_size: 7
       kernel_dimension: 1
       padding: 3
-      n_channels: 16
+      n_channels: 24
       # GNN parameters
       normalize: true
       improved: true
@@ -38,7 +40,7 @@ pretrain_parameters:
       kernel_size: 7
       kernel_dimension: 2
       padding: 3
-      n_channels: 16
+      n_channels: 24
 
 train_parameters:
   hyperparameters:

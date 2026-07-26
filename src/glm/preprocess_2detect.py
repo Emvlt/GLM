@@ -1,5 +1,4 @@
-import pathlib 
-import sys
+import pathlib
 
 import yaml
 import numpy as np

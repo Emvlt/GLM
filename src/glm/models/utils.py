@@ -87,16 +87,6 @@ def set_data_shape(
         return model[0].set_data_shape(
             batch_size, angles_indices, n_measurements, n_pixels, tensor, target
             )
-    elif isinstance(model, DDP):
-        return set_data_shape(
-            model.module, 
-            batch_size=batch_size,
-            angles_indices = angles_indices,
-            n_measurements = n_measurements,          
-            tensor = tensor, 
-            target = target,
-            n_pixels = n_pixels
-            )
     else:
         return model.set_data_shape(
             batch_size, angles_indices, n_measurements, n_pixels, tensor, target
