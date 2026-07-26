@@ -1,4 +1,3 @@
-import yaml
 import torch
 from ignite.metrics import PSNR, SSIM
 from ignite.handlers.tqdm_logger import ProgressBar
@@ -6,39 +5,34 @@ from ignite.engine import Engine
 
 from dvclive.live import Live
 
+from glm.config import load_params, init_run, log_ignite_metrics
 from glm.dataset import parse_dataloader
-from glm.models.utils import (get_angles_list_from_downsampling, load_geometry, load_pseudo_inverse_as_module)
+from glm.models.utils import build_geometry, build_pseudo_inverse_from_params
 
 def normalise(x:torch.Tensor) -> torch.Tensor:
     return (x-x.min()) / (x.max()-x.min())
 
 def evaluate_loop():
     # We load the different parameters
-    parameters = yaml.safe_load(open("params.yaml"))
+    parameters = load_params()
     data_parameters = parameters['data']
     train_parameters = parameters['train_parameters']
     evaluate_parameters = parameters['evaluate_parameters']
 
-    # Set the seed for reproducibility
-    torch.manual_seed(parameters['seed'])
-
-    # Instanciate the device object
-    device = torch.device(f'cuda:0')
+    device = init_run(parameters['seed'])
 
     print('Setting up evaluation')
     print(f'\t device: {device}')
 
     # We load the geometry object
     downsampling = evaluate_parameters['downsampling']
-    angles_indices = get_angles_list_from_downsampling(downsampling)
-    geometry = load_geometry(angles_indices)
+    geo = build_geometry(downsampling)
+    geometry = geo.geometry
 
     # Now the models
     # 1) The pseudo inverse
-    active_pseudo_inverse = train_parameters['active_pseudo_inverse']
-    pseudo_inverse_parameters = train_parameters['pseudo_inverse'][active_pseudo_inverse]
-    pseudo_inverse : torch.nn.Module = load_pseudo_inverse_as_module(
-        active_pseudo_inverse, pseudo_inverse_parameters, geometry, device
+    pseudo_inverse : torch.nn.Module = build_pseudo_inverse_from_params(
+        train_parameters, geometry, device
     )
 
     # Dataset
@@ -60,50 +54,38 @@ def evaluate_loop():
         input_sinogram = input_sinogram[:,:,::downsampling, :]
 
         infered_image = pseudo_inverse(input_sinogram)
-        
+
         infered_image = normalise(infered_image)
         target_reconstruction = normalise(target_reconstruction)
-        
+
         return infered_image, target_reconstruction
-          
+
     live = Live(save_dvc_exp=True, dir="dvclive/evaluate_FBP")
-    
+
     evaluator = Engine(eval_step)
-    ssim = SSIM(data_range=1.0) 
+    ssim = SSIM(data_range=1.0)
     psnr = PSNR(data_range=1.0)
     ssim.attach(evaluator, 'ssim')
     psnr.attach(evaluator, 'psnr')
-    
+
     pbar = ProgressBar()
     pbar.attach(evaluator)
-    
+
     # @evaluator.on(Events.COMPLETED)
     # def save_batch_images(engine):
-        
+
     #     y_pred, y_true = engine.state.output
-        
+
     #     batch_size = y_pred.size(0)
-        
+
     #     combined = torch.cat((y_pred, y_true), dim=0)
-        
+
     #     grid = make_grid(combined, nrow=batch_size, padding=2, normalize=False)
-    
+
     #     # 4. Save to disk using the current iteration number
     #     save_image(grid, f"src/glm/test_images_{downsampling}.png")
-    
-    # Run the Engine
-    state = evaluator.run(test_dataloader)
 
-    # Get the Result
-    test_psnr = state.metrics['psnr']
-    test_ssim = state.metrics['ssim']
-    print(f"Computed SSIM: {test_ssim:.4f}")
-    print(f"Computed PSNR: {test_psnr:.4f}")
-    
-    live.log_metric("Test SSIM", test_ssim)
-    live.log_metric("Test PSNR", test_psnr)
-    live.log_param('Downsampling', downsampling)
-        
+    log_ignite_metrics(evaluator, test_dataloader, live, downsampling)
 
 if __name__ == '__main__':
     evaluate_loop()

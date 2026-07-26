@@ -1,37 +1,32 @@
-from pathlib import Path
-
-import yaml
 import torch
-from torch_geometric.data import Batch
 from dvclive import Live
 from statistics import mean
 
+from glm.config import load_params, init_run, PRETRAINED_SINOGRAM_MODEL_PATH
 from glm.utils import plot_image_live
 from glm.dataset import parse_dataloader
-from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, PSNR, set_data_shape)
+from glm.models.utils import (
+    load_model, load_graph, build_geometry, build_batched_graph,
+    forward_sinogram_model, PSNR, N_PIXELS,
+    )
 
 def pretraining_loop():
 
     # We load the different parameters
-    params = yaml.safe_load(open("params.yaml"))
+    params = load_params()
     data_parameters = params['data']
     parameters = params['pretrain_parameters']
     # What are the training hyperparameters
     hyperparameters = parameters['hyperparameters']
 
-    # Set the seed for reproducibility
-    torch.manual_seed(params['seed'])
-
-    # Instanciate the device object
-    device = torch.device(f'cuda:0')
+    device = init_run(params['seed'])
 
     print(f'\t device: {device}')
 
     # We load the geometry object
     downsampling = hyperparameters['downsampling']
-    angles_indices = get_angles_list_from_downsampling(downsampling)
-    n_measurements = 3600 if angles_indices is None else len(angles_indices)
-    geometry = load_geometry(angles_indices)
+    geo = build_geometry(downsampling)
+    angles_indices, n_measurements, geometry = geo.angles_indices, geo.n_measurements, geo.geometry
 
     # Now the model
     active_model = parameters['active_model']
@@ -71,17 +66,13 @@ def pretraining_loop():
         model.parameters(),
         lr=learning_rate
         )
-    
-    model_save_path = Path('src/glm/saved_models/pretrained_sinogram_model.pt')
+
+    model_save_path = PRETRAINED_SINOGRAM_MODEL_PATH
     model_save_path.parent.mkdir(exist_ok=True)
 
     # The dataloaders use drop_last=True, so batch_size is constant across
     # every iteration below: the batched graph can be built once and reused.
-    graphs = None
-    if graph is not None:
-        graphs = Batch.from_data_list(
-            [graph for _ in range(hyperparameters['batch_size'])]
-            ).to(device)
+    graphs = build_batched_graph(graph, hyperparameters['batch_size'], device)
 
     live = Live(save_dvc_exp=True, dir="dvclive/pretraining")
 
@@ -89,29 +80,24 @@ def pretraining_loop():
     live.log_params(hyperparameters)
 
     for epoch in range(epochs):
-        
+
         model.train()
         for index, tensor_dict in enumerate(train_dataloader):
             batch_size = tensor_dict['preprocessed_sinogram_mode2'].size(0)
 
             input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
 
-            input_sinogram  = set_data_shape(
-                model = model,
-                batch_size=batch_size,
-                angles_indices = angles_indices,
-                n_measurements = n_measurements,
-                tensor = input_sinogram, 
-                target='NN')
-
             optimiser.zero_grad()
 
-            if graph is None:
-                infered_sinogram = model(input_sinogram)
-            else:
-                infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+            input_sinogram, infered_sinogram = forward_sinogram_model(
+                model, input_sinogram,
+                batch_size = batch_size,
+                angles_indices = angles_indices,
+                n_measurements = n_measurements,
+                graph = graph,
+                graphs = graphs,
+                )
 
-            
             loss = loss_function(infered_sinogram, input_sinogram)
             loss.backward()
             optimiser.step()
@@ -120,10 +106,10 @@ def pretraining_loop():
             live.log_metric("PSNR", current_psnr.item())
             live.log_metric("MSE loss", loss.item())
             live.next_step()
-        
+
             if index %50==0:
                 plot_image_live(
-                data = infered_sinogram.view(batch_size, n_measurements, 956), 
+                data = infered_sinogram.view(batch_size, n_measurements, N_PIXELS),
                 name = 'infered_sinogram',
                 title='Infered Sinogram',
                 extension='jpg',
@@ -131,7 +117,7 @@ def pretraining_loop():
                 )
 
                 plot_image_live(
-                input_sinogram.view(batch_size, n_measurements, 956), 
+                input_sinogram.view(batch_size, n_measurements, N_PIXELS),
                 name = 'input_sinogram',
                 title='Input Sinogram',
                 extension='jpg',
@@ -146,27 +132,23 @@ def pretraining_loop():
 
             input_sinogram = tensor_dict['preprocessed_sinogram_mode2'].float().to(device)
 
-            input_sinogram  = set_data_shape(
-                model = model,
-                batch_size=batch_size,
+            input_sinogram, infered_sinogram = forward_sinogram_model(
+                model, input_sinogram,
+                batch_size = batch_size,
                 angles_indices = angles_indices,
                 n_measurements = n_measurements,
-                tensor = input_sinogram, 
-                target='NN')
-
-            if graph is None:
-                infered_sinogram = model(input_sinogram)
-            else:
-                infered_sinogram = model(input_sinogram, graphs.edge_index, graphs.edge_weight)
+                graph = graph,
+                graphs = graphs,
+                )
 
             validation.append(
                 psnr(infered_sinogram, input_sinogram).item()
-                )       
+                )
 
     live.log_metric("Validation PSNR", mean(validation))
     live.log_artifact(
-        path=str(model_save_path), 
-        type="model", 
+        path=str(model_save_path),
+        type="model",
         name="pretrained_sinogram_model",
         desc="Pretrained model for sinogram processing",
         labels=['sinogram', 'pretraining'],
@@ -174,7 +156,7 @@ def pretraining_loop():
         )
     torch.save(model.state_dict(), model_save_path)
 
-        
+
 
 if __name__ == '__main__':
     pretraining_loop()
