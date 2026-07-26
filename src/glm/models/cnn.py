@@ -28,7 +28,14 @@ class CNN_Module(nn.Module):
 
         else:
             raise ValueError
-            
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        # conv2's ReLU can die if its pre-activation goes negative everywhere;
+        # a small positive bias keeps it away from that all-zero dead state.
+        nn.init.constant_(self.conv2[0].bias, 0.1)
+
     def forward(self, input_tensor:torch.Tensor):
         assert len(input_tensor.size()) == 2 + self.dimension
         out = self.conv1(input_tensor)

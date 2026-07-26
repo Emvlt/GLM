@@ -206,6 +206,12 @@ class GLM_Module(MessagePassing):
         super().reset_parameters()
         self.conv1.reset_parameters()
         self.conv2.reset_parameters()
+        # conv2's output is added directly to the propagated features with no
+        # activation in between (see forward()); starting its bias positive
+        # keeps early pre-activations away from the all-negative dead state
+        # that collapses the network to an all-zero output under the
+        # LeakyReLU applied between GLM_Module blocks.
+        nn.init.constant_(self.conv2.bias, 0.1)
         self._cached_edge_index = None
         self._cached_adj_t = None
 

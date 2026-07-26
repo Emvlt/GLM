@@ -30,11 +30,11 @@ def _build_sinogram_cnn(model_parameters: Dict) -> torch.nn.Module:
     n_channels = model_parameters['n_channels']
     return torch.nn.Sequential(
         CNN_Module(1, n_channels, model_parameters),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
         CNN_Module(n_channels, n_channels, model_parameters),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
         CNN_Module(n_channels, 1, model_parameters),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
     )
 
 def _build_image_cnn(model_parameters: Dict) -> torch.nn.Module:
@@ -47,17 +47,17 @@ def _build_glm(model_parameters: Dict) -> torch.nn.Module:
                 GLM_Module(1, n_channels, model_parameters),
                 'x, edge_index, edge_weight -> x'
             ),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
             (
                 GLM_Module(n_channels, n_channels, model_parameters),
                 'x, edge_index, edge_weight -> x'
             ),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
             (
                 GLM_Module(n_channels, 1, model_parameters),
                 'x, edge_index, edge_weight -> x'
             ),
-        torch.nn.ReLU(inplace=True),
+        torch.nn.LeakyReLU(negative_slope=0.1, inplace=True),
     ])
 
 MODEL_REGISTRY: Dict[str, Callable[[Dict], torch.nn.Module]] = {
