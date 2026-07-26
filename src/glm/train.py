@@ -27,7 +27,7 @@ def training_loop():
     # What are the training hyperparameters
     hyperparameters = train_parameters['hyperparameters']
 
-    torch.manual_seed(params['seed'])
+    torch.manual_seed(parameters['seed'])
 
     # Instanciate the device object
     device = torch.device(f'cuda:0')
