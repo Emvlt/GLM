@@ -20,7 +20,7 @@ from odl.contrib.datasets.ct.detect import preprocess_sinogram
 def loop_over_dataset(
         raw_path:pathlib.Path, 
         processed_path:pathlib.Path, 
-        mode='mode2'
+        mode:str
         ):
     print(f'Processing the 2detect dataset: \n')
     print(f'\t Raw filepath: {raw_path}\n')
@@ -44,29 +44,16 @@ def loop_over_dataset(
             np.save(path_to_processed, reconstruction)
 
 def main():
-    if len(sys.argv) != 3:
-        sys.stderr.write("Arguments error. Usage:\n")
-        sys.stderr.write("\tpython preprocess_2detect.py mode task \n")
-        sys.exit(1)
-
     parameters = yaml.safe_load(open("params.yaml"))
 
-    mode = sys.argv[1]
-    accepted_modes = ['mode1', 'mode2', 'mode3']
-    assert mode in accepted_modes, f"Wrong mode argument, expected to be in {accepted_modes}, got {mode}"
+   
+    raw_path = pathlib.Path(parameters['data']['raw_path'])
+    processed_path = pathlib.Path(parameters['data']['processed_path'])
 
-    task = sys.argv[2]
-    accepted_tasks = ['demo', 'train']
-    assert task in accepted_tasks, f"Wrong task argument, expected to be in {accepted_tasks}, got {mode}"
-    if mode == 'demo':
-        raw_path = pathlib.Path(parameters[task]['data']['raw_path'])
-        processed_path = pathlib.Path(parameters[task]['data']['processed_path'])
-    else:
-        raw_path = pathlib.Path(parameters['data']['raw_path'])
-        processed_path = pathlib.Path(parameters['data']['processed_path'])
     assert raw_path.is_dir(), f'The input raw_path {raw_path} is not a dir.'
 
-    loop_over_dataset(raw_path, processed_path, mode)
+    for mode in ['mode1', 'mode2', 'mode3']:
+        loop_over_dataset(raw_path, processed_path, mode)
 
 if __name__ == '__main__':
     main()
