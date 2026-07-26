@@ -70,5 +70,6 @@ train_parameters:
 
 evaluate_parameters:
   downsampling: 10
+  downsampling_sweep: [1, 2, 4, 6, 8, 10]
   batch_size: 8
   num_workers: 1

@@ -35,25 +35,32 @@ stages:
     - src/glm/saved_models/model.pt
 
   evaluate:
-    cmd: uv run python src/glm/evaluate.py
-    deps:
-    - src/glm/evaluate.py
-    - src/glm/saved_models/model.pt
-    - ${data.processed_path}
-    params:
-    - data
-    - pretrain_parameters
-    - train_parameters
-    - evaluate_parameters
-    - seed
-    outs:
-    - dvclive/evaluate
+    foreach: ${evaluate_parameters.downsampling_sweep}
+    do:
+      cmd: uv run python src/glm/evaluate.py --downsampling ${item}
+      deps:
+      - src/glm/evaluate.py
+      - src/glm/saved_models/model.pt
+      - ${data.processed_path}
+      params:
+      - data
+      - pretrain_parameters
+      - train_parameters
+      - evaluate_parameters
+      - seed
+      outs:
+      - dvclive/evaluate/${item}
 
 params:
 - params.yaml
 - dvclive/pretraining/params.yaml
 - dvclive/training/params.yaml
-- dvclive/evaluate/params.yaml
+- dvclive/evaluate/1/params.yaml
+- dvclive/evaluate/2/params.yaml
+- dvclive/evaluate/4/params.yaml
+- dvclive/evaluate/6/params.yaml
+- dvclive/evaluate/8/params.yaml
+- dvclive/evaluate/10/params.yaml
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
@@ -160,7 +167,12 @@ artifacts:
 metrics:
 - dvclive/pretraining/metrics.json
 - dvclive/training/metrics.json
-- dvclive/evaluate/metrics.json
+- dvclive/evaluate/1/metrics.json
+- dvclive/evaluate/2/metrics.json
+- dvclive/evaluate/4/metrics.json
+- dvclive/evaluate/6/metrics.json
+- dvclive/evaluate/8/metrics.json
+- dvclive/evaluate/10/metrics.json
 plots:
 - dvclive/pretraining/plots/metrics:
     x: step
@@ -168,6 +180,16 @@ plots:
 - dvclive/training/plots/metrics:
     x: step
 - dvclive/training/plots/images
-- dvclive/evaluate/plots/metrics:
+- dvclive/evaluate/1/plots/metrics:
+    x: step
+- dvclive/evaluate/2/plots/metrics:
+    x: step
+- dvclive/evaluate/4/plots/metrics:
+    x: step
+- dvclive/evaluate/6/plots/metrics:
+    x: step
+- dvclive/evaluate/8/plots/metrics:
+    x: step
+- dvclive/evaluate/10/plots/metrics:
     x: step
 

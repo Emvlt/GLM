@@ -1,3 +1,5 @@
+import argparse
+
 import torch
 from ignite.metrics import PSNR, SSIM
 from ignite.contrib.handlers import ProgressBar
@@ -15,7 +17,7 @@ from glm.models.utils import (
 def normalise(x:torch.Tensor) -> torch.Tensor:
     return (x-x.min()) / (x.max()-x.min())
 
-def evaluate_loop():
+def evaluate_loop(downsampling: int | None = None):
     # We load the different parameters
     parameters = load_params()
     data_parameters = parameters['data']
@@ -29,7 +31,8 @@ def evaluate_loop():
     print(f'\t device: {device}')
 
     # We load the geometry object
-    downsampling = evaluate_parameters['downsampling']
+    if downsampling is None:
+        downsampling = evaluate_parameters['downsampling']
     geo = build_geometry(downsampling)
     angles_indices, n_measurements, geometry = geo.angles_indices, geo.n_measurements, geo.geometry
 
@@ -105,7 +108,7 @@ def evaluate_loop():
 
         return infered_image, target_reconstruction
 
-    live = Live(save_dvc_exp=True, dir="dvclive/evaluate")
+    live = Live(save_dvc_exp=True, dir=f"dvclive/evaluate/{downsampling}")
 
     sinogram_model.eval()
     image_model.eval()
@@ -137,5 +140,11 @@ def evaluate_loop():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--downsampling', type=int, default=None,
+        help='overrides evaluate_parameters.downsampling from params.yaml',
+        )
+    args = parser.parse_args()
 
-    evaluate_loop()
+    evaluate_loop(args.downsampling)

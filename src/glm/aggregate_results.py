@@ -1,29 +1,33 @@
 """
-Aggregates dvc exp results into mean +/- std PSNR/SSIM per config, across
-whatever seeds/configs have been run (REVISION_PLAN.md P1 statistical-rigor
-item 3 -- the new Table 1).
+Aggregates dvc exp results into mean +/- std PSNR/SSIM per (model, channels,
+downsampling) config, across whatever seeds have been run (REVISION_PLAN.md
+P1 statistical-rigor item 3 -- the new Table 1).
 
 Reads `dvc exp show --json`, not the dvclive/ files directly: experiments
 queued/run via queue_statistical_experiments.py only exist as dvc exp refs,
 not as separate directories on disk, so `dvc exp show` is the only place
-that correlates each run's params (seed, active_model, n_channels,
-downsampling) with its metrics (Test PSNR/Test SSIM from
-dvclive/evaluate/metrics.json).
+that correlates each run's params (seed, active_model, n_channels) with its
+metrics. `evaluate` is a dvc.yaml `foreach` stage over
+evaluate_parameters.downsampling_sweep, so a single experiment produces one
+dvclive/evaluate/<downsampling>/metrics.json per swept value -- downsampling
+is read from that path, not from the (no longer per-item) params.yaml
+evaluate_parameters.downsampling scalar.
 
-Experiments whose metrics can't be read (e.g. missing from the local DVC
-cache -- this currently affects the historical FBP_*/CNN_*/GLM_* sweep
-experiments, since no DVC remote is configured) are skipped with a warning,
-not silently dropped.
+Experiments/downsampling values whose metrics can't be read (e.g. missing
+from the local DVC cache -- this currently affects the historical
+FBP_*/CNN_*/GLM_* sweep experiments, since no DVC remote is configured) are
+skipped with a warning, not silently dropped.
 """
 import argparse
 import csv
 import json
+import re
 import subprocess
 from collections import defaultdict
 from statistics import mean, stdev
 from typing import Dict, List, Optional
 
-METRICS_FILE = 'dvclive/evaluate/metrics.json'
+METRICS_FILE_PATTERN = re.compile(r'^dvclive/evaluate/(\d+)/metrics\.json$')
 DEFAULT_OUTPUT = 'results/aggregated_results.csv'
 
 def load_experiments() -> List[Dict]:
@@ -44,42 +48,52 @@ def flatten_experiments(entries: List[Dict]) -> List[Dict]:
             flat += flatten_experiments(entry['experiments'])
     return flat
 
-def extract_record(exp: Dict) -> Optional[Dict]:
+def extract_records(exp: Dict) -> List[Dict]:
     name = exp.get('name')
     if not name:
-        return None
+        return []
 
     data = exp.get('data') or {}
-    metric_entry = data.get('metrics', {}).get(METRICS_FILE, {})
-    metrics = metric_entry.get('data')
-    if metrics is None:
-        print(f"Skipping '{name}': {METRICS_FILE} not readable ({metric_entry.get('error', {}).get('type', 'no data')})")
-        return None
-
     params = data.get('params', {}).get('params.yaml', {}).get('data', {})
     seed = params.get('seed')
     pretrain_parameters = params.get('pretrain_parameters', {})
     active_model = pretrain_parameters.get('active_model')
     n_channels = pretrain_parameters.get('models', {}).get(active_model, {}).get('n_channels')
-    downsampling = params.get('evaluate_parameters', {}).get('downsampling')
 
     if seed is None or active_model is None or n_channels is None:
         print(f"Skipping '{name}': missing seed/active_model/n_channels in params")
-        return None
+        return []
 
-    if 'Test PSNR' not in metrics or 'Test SSIM' not in metrics:
-        print(f"Skipping '{name}': {METRICS_FILE} missing 'Test PSNR'/'Test SSIM'")
-        return None
+    records = []
+    for metrics_file, metric_entry in data.get('metrics', {}).items():
+        match = METRICS_FILE_PATTERN.match(metrics_file)
+        if match is None:
+            continue
 
-    return {
-        'name': name,
-        'seed': seed,
-        'active_model': active_model,
-        'n_channels': n_channels,
-        'downsampling': downsampling,
-        'psnr': metrics['Test PSNR'],
-        'ssim': metrics['Test SSIM'],
-        }
+        downsampling = int(match.group(1))
+        metrics = (metric_entry or {}).get('data')
+        if metrics is None:
+            error_type = (metric_entry or {}).get('error', {}).get('type', 'no data')
+            print(f"Skipping '{name}' downsampling={downsampling}: {metrics_file} not readable ({error_type})")
+            continue
+
+        if 'Test PSNR' not in metrics or 'Test SSIM' not in metrics:
+            print(f"Skipping '{name}' downsampling={downsampling}: {metrics_file} missing 'Test PSNR'/'Test SSIM'")
+            continue
+
+        records.append({
+            'name': name,
+            'seed': seed,
+            'active_model': active_model,
+            'n_channels': n_channels,
+            'downsampling': downsampling,
+            'psnr': metrics['Test PSNR'],
+            'ssim': metrics['Test SSIM'],
+            })
+
+    if not records:
+        print(f"Skipping '{name}': no readable dvclive/evaluate/<downsampling>/metrics.json found")
+    return records
 
 def aggregate(records: List[Dict]) -> List[Dict]:
     groups = defaultdict(list)
@@ -137,7 +151,7 @@ def main():
     args = parser.parse_args()
 
     experiments = flatten_experiments(load_experiments())
-    records = [r for r in (extract_record(exp) for exp in experiments) if r is not None]
+    records = [r for exp in experiments for r in extract_records(exp)]
 
     if not records:
         print('\nNo experiments with readable metrics found.')
