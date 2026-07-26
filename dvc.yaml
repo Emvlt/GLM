@@ -1,6 +1,7 @@
 stages:
   prepare_training:
     cmd: uv run python src/glm/preprocess_2detect.py
+    frozen: true
     deps:
     - src/glm/preprocess_2detect.py
     - ${data.raw_path}
@@ -12,8 +13,6 @@ stages:
 
   pretraining:
     cmd: uv run python src/glm/pretrain.py
-    deps:
-    - ${data.processed_path}
     params:
     - pretrain_parameters
     - seed
@@ -28,7 +27,6 @@ stages:
     - train_parameters
     - seed
     deps:
-    - ${data.processed_path}
     - src/glm/saved_models/pretrained_sinogram_model.pt
     outs:
     - dvclive/training
@@ -41,7 +39,6 @@ stages:
       deps:
       - src/glm/evaluate.py
       - src/glm/saved_models/model.pt
-      - ${data.processed_path}
       params:
       - data
       - pretrain_parameters

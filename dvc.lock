@@ -56,7 +56,7 @@ stages:
       md5: 3d40d439da4a3c4e4f7cf1ce7a749f74
       size: 20319
   prepare_training:
-    cmd: uv run python src/glm/preprocess_2detect.py train
+    cmd: uv run python src/glm/preprocess_2detect.py
     deps:
     - path: /media/Store-HDD/emilien_temp/raw/2detect
       hash: md5
@@ -65,8 +65,8 @@ stages:
       nfiles: 80010
     - path: src/glm/preprocess_2detect.py
       hash: md5
-      md5: 68ccc17ff4222f66ce1ad520cd615d06
-      size: 2053
+      md5: c0c77d44d88359f649bdd61fdf639ecd
+      size: 2041
     params:
       params.yaml:
         data:
