@@ -18,7 +18,7 @@ import pandas as pd
 from dvclive import Live
 from torchvision.utils import save_image, make_grid
 
-from glm.utils import plot_image_live, setup_distributed, cleanup_distributed, signal_handler
+from glm.utils import plot_image_live #, setup_distributed, cleanup_distributed, signal_handler
 from glm.dataset import parse_dataloader
 from glm.models.utils import (get_angles_list_from_downsampling, load_model, load_graph, load_geometry, load_pseudo_inverse_as_module, set_data_shape)
 
@@ -26,11 +26,6 @@ def normalise(x:torch.Tensor) -> torch.Tensor:
     return (x-x.min()) / (x.max()-x.min())
 
 def evaluate_loop():
-
-    # Setup distributed training
-    rank, world_size, local_rank = setup_distributed()
-    is_main_process = rank == 0
-
     # We load the different parameters
     parameters = yaml.safe_load(open("params.yaml"))
     data_parameters = parameters['data']
@@ -39,13 +34,9 @@ def evaluate_loop():
     evaluate_parameters = parameters['evaluate_parameters']
 
     # Instanciate the device object
-    local_rank = int(local_rank)
-    device = torch.device(f'cuda:{local_rank}')
+    device = torch.device(f'cuda:0')
 
     print('Setting up evaluation')
-    print(f'\t rank: {rank}')
-    print(f'\t local rank: {local_rank}')
-    print(f'\t world size: {world_size}')
     print(f'\t device: {device}')
 
     # We load the geometry object
@@ -82,11 +73,6 @@ def evaluate_loop():
         torch.load('src/glm/saved_models/model.pt', map_location=device)['image_model'])
     image_model = image_model.to(device)
 
-    # Wrap model in DDP if using multiple GPUs
-    if world_size > 1:
-        sinogram_model = DDP(sinogram_model, device_ids=[local_rank], output_device=local_rank)
-        image_model = DDP(image_model, device_ids=[local_rank], output_device=local_rank)
-
     # And the graph
     graph = load_graph(active_sinogram_model, geometry)
     if graph is not None:
@@ -101,10 +87,7 @@ def evaluate_loop():
             ('preprocessed_reconstruction', 'mode2')
             ],
         batch_size=evaluate_parameters['batch_size'],
-        num_workers=evaluate_parameters['num_workers'],
-        distributed=(world_size > 1),
-        rank=rank,
-        world_size=world_size
+        num_workers=evaluate_parameters['num_workers']
     )
 
     def eval_step(engine, batch):
@@ -143,57 +126,49 @@ def evaluate_loop():
         target_reconstruction = normalise(target_reconstruction)
         
         return infered_image, target_reconstruction
+     
+    live = Live(save_dvc_exp=True, dir="dvclive/evaluate") 
     
+    sinogram_model.eval()
+    image_model.eval()
+    
+    evaluator = Engine(eval_step)
+    ssim = SSIM(data_range=1.0) 
+    psnr = PSNR(data_range=1.0)
+    ssim.attach(evaluator, 'ssim')
+    psnr.attach(evaluator, 'psnr')
+    
+    pbar = ProgressBar()
+    pbar.attach(evaluator)
+    
+    # @evaluator.on(Events.COMPLETED)
+    # def save_batch_images(engine):
+        
+    #     y_pred, y_true = engine.state.output
+        
+    #     batch_size = y_pred.size(0)
+        
+    #     combined = torch.cat((y_pred, y_true), dim=0)
+        
+    #     grid = make_grid(combined, nrow=batch_size, padding=2, normalize=False)
+    
+    #     # 4. Save to disk using the current iteration number
+    #     save_image(grid, f"src/glm/test_images_{downsampling}.png")
+    
+    # Run the Engine
+    state = evaluator.run(test_dataloader)
 
-    try:        
-        live = Live(save_dvc_exp=True, dir="dvclive/evaluate") if is_main_process else None
+    # Get the Result
+    test_psnr = state.metrics['psnr']
+    test_ssim = state.metrics['ssim']
+    print(f"Computed SSIM: {test_ssim:.4f}")
+    print(f"Computed PSNR: {test_psnr:.4f}")
+    
+    live.log_metric("Test SSIM", test_ssim)
+    live.log_metric("Test PSNR", test_psnr)
+    live.log_param('Downsampling', downsampling)
         
-        sinogram_model.eval()
-        image_model.eval()
-        
-        evaluator = Engine(eval_step)
-        ssim = SSIM(data_range=1.0) 
-        psnr = PSNR(data_range=1.0)
-        ssim.attach(evaluator, 'ssim')
-        psnr.attach(evaluator, 'psnr')
-        
-        pbar = ProgressBar()
-        pbar.attach(evaluator)
-        
-        # @evaluator.on(Events.COMPLETED)
-        # def save_batch_images(engine):
-            
-        #     y_pred, y_true = engine.state.output
-            
-        #     batch_size = y_pred.size(0)
-            
-        #     combined = torch.cat((y_pred, y_true), dim=0)
-            
-        #     grid = make_grid(combined, nrow=batch_size, padding=2, normalize=False)
-        
-        #     # 4. Save to disk using the current iteration number
-        #     save_image(grid, f"src/glm/test_images_{downsampling}.png")
-        
-        # Run the Engine
-        state = evaluator.run(test_dataloader)
-
-        # Get the Result
-        test_psnr = state.metrics['psnr']
-        test_ssim = state.metrics['ssim']
-        print(f"Computed SSIM: {test_ssim:.4f}")
-        print(f"Computed PSNR: {test_psnr:.4f}")
-        
-        live.log_metric("Test SSIM", test_ssim)
-        live.log_metric("Test PSNR", test_psnr)
-        live.log_param('Downsampling', downsampling)
-        
-    finally:
-        if is_main_process and live is not None:
-            live.end()
-        cleanup_distributed()   
-
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+
     evaluate_loop()

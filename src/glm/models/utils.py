@@ -8,7 +8,6 @@ from odl.applications.tomo.geometry import Geometry
 from odl.applications.tomo.analytic import fbp_op
 from odl.contrib.graphs.graph_interface import create_graph_from_geometry
 from odl.contrib.datasets.ct.detect import detect_geometry, detect_ray_trafo
-from torch.nn.parallel import DistributedDataParallel as DDP
 
 from .cnn import ImageCNN, CNN_Module
 from .gnn import GLM_Module
