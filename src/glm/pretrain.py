@@ -17,10 +17,14 @@ from glm.models.utils import (get_angles_list_from_downsampling, load_model, loa
 def pretraining_loop():
 
     # We load the different parameters
-    data_parameters = yaml.safe_load(open("params.yaml"))['data']
-    parameters = yaml.safe_load(open("params.yaml"))['pretrain_parameters']
+    params = yaml.safe_load(open("params.yaml"))
+    data_parameters = params['data']
+    parameters = params['pretrain_parameters']
     # What are the training hyperparameters
     hyperparameters = parameters['hyperparameters']
+
+    # Set the seed for reproducibility
+    torch.manual_seed(params['seed'])
 
     # Instanciate the device object
     device = torch.device(f'cuda:0')

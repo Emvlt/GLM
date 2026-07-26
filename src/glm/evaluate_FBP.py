@@ -32,8 +32,10 @@ def evaluate_loop():
     pretrain_parameters = parameters['pretrain_parameters']
     evaluate_parameters = parameters['evaluate_parameters']
 
+    # Set the seed for reproducibility
+    torch.manual_seed(parameters['seed'])
+
     # Instanciate the device object
-    local_rank = int(local_rank)
     device = torch.device(f'cuda:0')
 
     print('Setting up evaluation')
