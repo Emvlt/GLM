@@ -8,6 +8,8 @@ from dvclive import Live
 
 PRETRAINED_SINOGRAM_MODEL_PATH = Path('src/glm/saved_models/pretrained_sinogram_model.pt')
 COMBINED_MODEL_PATH = Path('src/glm/saved_models/model.pt')
+SINOGRAM_DENOISING_MODEL_PATH = Path('src/glm/saved_models/sinogram_denoising_model.pt')
+SINOGRAM_DENOISING_PARAMS_PATH = Path('sinogram_denoising_params.yaml')
 
 def load_params(path: str = "params.yaml") -> Dict:
     with open(path) as f:
