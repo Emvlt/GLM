@@ -6,11 +6,11 @@ from dvclive import Live
 from statistics import mean
 
 from glm.config import load_params, init_run, SINOGRAM_DENOISING_MODEL_PATH, SINOGRAM_DENOISING_PARAMS_PATH
-from glm.utils import plot_image_live
+from glm.utils import plot_image_live, plot_image
 from glm.dataset import parse_dataloader
 from glm.models.utils import (
     load_model, load_graph, build_geometry, build_batched_graph,
-    forward_sinogram_model, PSNR, N_PIXELS,
+    forward_sinogram_model, PSNR, N_PIXELS
     )
 
 
@@ -136,6 +136,9 @@ def training_loop(
                 live.log_metric("PSNR", current_psnr.item())
                 live.log_metric("MSE loss", loss.item())
                 live.next_step()
+
+                print(f'Current PSNR: {current_psnr.item():.6f}')
+                plot_image(infered_sinogram, 'test')
                 
                 plot_image_live(
                 data = infered_sinogram.view(batch_size, n_measurements, N_PIXELS),

@@ -6,13 +6,13 @@ seed: 1
 
 hyperparameters:
   learning_rate: 5e-4
-  epochs: 10
+  epochs: 8
   batch_size: 8
   num_workers: 2
   downsampling: 1
   input_mode: mode1
   target_mode: mode2
-  early_stopping_patience: 5
+  early_stopping_patience: 2
   early_stopping_min_delta: 0.0
 model_parameters:
   active_model: GLM
