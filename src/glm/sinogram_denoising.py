@@ -20,14 +20,15 @@ def training_loop(
 
     # We load the different parameters
     parameters = load_params(params_path)
+
+    print(json.dumps(parameters, indent=4))
+
     data_parameters = parameters['data']
     # What are the training hyperparameters
     hyperparameters  = parameters['hyperparameters']
     model_parameters = parameters['model_parameters']
 
     device = init_run(parameters['seed'])
-
-    print(f'\t device: {device}')
 
     # We load the geometry object
     downsampling = hyperparameters['downsampling']
