@@ -1,0 +1,43 @@
+data:
+  raw_path: /media/Store-HDD/emilien_temp/raw/2detect
+  processed_path: /media/Store-HDD/emilien_temp/processed/2detect
+
+seed: 1
+
+hyperparameters:
+  learning_rate: 5e-4
+  epochs: 1
+  batch_size: 8
+  num_workers: 2
+  downsampling: 1
+  input_mode: mode1
+  target_mode: mode2
+  early_stopping_patience: 5
+  early_stopping_min_delta: 0.0
+model_parameters:
+  active_model: GLM
+  models:
+    GLM:
+      # CNN parameters
+      kernel_size: 7
+      kernel_dimension: 1
+      padding: 3
+      n_channels: 24
+      n_modules: 3
+      # GNN parameters
+      normalize: true
+      improved: true
+      cached: false
+      add_self_loops: true
+      aggr: add
+      graph_kwargs:
+        kernel_type: gaussian
+        sigma: 1
+        connectivity: 1
+    sinogram_CNN:
+      # CNN parameters
+      kernel_size: 7
+      kernel_dimension: 2
+      padding: 3
+      n_channels: 24
+      n_modules: 3
