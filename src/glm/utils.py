@@ -29,13 +29,14 @@ def plot_image(data, savepath, extension=None, title=None):
     
     savepath = pathlib.Path(savepath)
     savepath.parent.mkdir(exist_ok=True, parents=True)
-    
-    plt.matshow(data)
+
+    fig, ax = plt.subplots()
+    im = ax.matshow(data)
     if title is not None and isinstance(title, str):
-        plt.title(title)
-    plt.colorbar()
-    plt.savefig(f'{savepath}.{extension}', bbox_inches = 'tight')
-    plt.clf()
+        ax.set_title(title)
+    fig.colorbar(im, ax=ax)
+    fig.savefig(f'{savepath}.{extension}', bbox_inches = 'tight')
+    plt.close(fig)
 
 def plot_image_live(
         data, live_session, name, extension=None, title=None
@@ -57,3 +58,4 @@ def plot_image_live(
     if title is not None and isinstance(title, str):
         axs.set_title(title)
     live_session.log_image(f"{name}.{extension}", fig)
+    plt.close(fig)

@@ -128,6 +128,8 @@ def training_loop(
                 )
 
             loss = loss_function(infered_sinogram, target_sinogram)
+
+            print(loss.item())
             loss.backward()
             optimiser.step()
 
