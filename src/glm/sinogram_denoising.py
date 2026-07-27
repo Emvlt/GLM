@@ -122,18 +122,19 @@ def training_loop(
                 n_measurements = n_measurements,
                 graph = graph,
                 graphs = graphs,
+                reshape_to_tomo = True,
                 )
 
             loss = loss_function(infered_sinogram, target_sinogram)
             loss.backward()
             optimiser.step()
 
-            current_psnr = psnr(infered_sinogram, target_sinogram)
-            live.log_metric("PSNR", current_psnr.item())
-            live.log_metric("MSE loss", loss.item())
-            live.next_step()
-
             if index %50==0:
+                current_psnr = psnr(infered_sinogram, target_sinogram)
+                live.log_metric("PSNR", current_psnr.item())
+                live.log_metric("MSE loss", loss.item())
+                live.next_step()
+                
                 plot_image_live(
                 data = infered_sinogram.view(batch_size, n_measurements, N_PIXELS),
                 name = 'infered_sinogram',
@@ -166,6 +167,7 @@ def training_loop(
                     n_measurements = n_measurements,
                     graph = graph,
                     graphs = graphs,
+                    reshape_to_tomo = True,
                     )
 
                 validation_losses.append(

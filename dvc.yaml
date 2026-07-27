@@ -36,8 +36,39 @@ stages:
       outs:
       - dvclive/evaluate/${item}
 
+  sinogram_denoising:
+    cmd: uv run python src/glm/sinogram_denoising.py
+    params:
+    - sinogram_denoising_params.yaml:
+      - data
+      - seed
+      - hyperparameters
+      - model_parameters
+    outs:
+    - dvclive/sinogram_denoising
+    - src/glm/saved_models/sinogram_denoising_model.pt
+
+  evaluate_sinogram_denoising:
+    foreach: ${evaluate_parameters.downsampling_sweep}
+    do:
+      cmd: uv run python src/glm/evaluate_sinogram_denoising.py --downsampling 
+        ${item}
+      deps:
+      - src/glm/evaluate_sinogram_denoising.py
+      - src/glm/saved_models/sinogram_denoising_model.pt
+      params:
+      - evaluate_parameters
+      - sinogram_denoising_params.yaml:
+        - data
+        - seed
+        - hyperparameters
+        - model_parameters
+      outs:
+      - dvclive/evaluate_sinogram_denoising/${item}
+
 params:
 - params.yaml
+- sinogram_denoising_params.yaml
 - dvclive/pretraining/params.yaml
 - dvclive/training/params.yaml
 - dvclive/evaluate/1/params.yaml
@@ -46,6 +77,13 @@ params:
 - dvclive/evaluate/6/params.yaml
 - dvclive/evaluate/8/params.yaml
 - dvclive/evaluate/10/params.yaml
+- dvclive/evaluate_sinogram_denoising/1/params.yaml
+- dvclive/evaluate_sinogram_denoising/2/params.yaml
+- dvclive/evaluate_sinogram_denoising/4/params.yaml
+- dvclive/evaluate_sinogram_denoising/6/params.yaml
+- dvclive/evaluate_sinogram_denoising/8/params.yaml
+- dvclive/evaluate_sinogram_denoising/10/params.yaml
+- dvclive/sinogram_denoising/params.yaml
 artifacts:
   pretrained_sinogram_model:
     path: src/glm/saved_models/pretrained_sinogram_model.pt
@@ -158,6 +196,13 @@ metrics:
 - dvclive/evaluate/6/metrics.json
 - dvclive/evaluate/8/metrics.json
 - dvclive/evaluate/10/metrics.json
+- dvclive/evaluate_sinogram_denoising/1/metrics.json
+- dvclive/evaluate_sinogram_denoising/2/metrics.json
+- dvclive/evaluate_sinogram_denoising/4/metrics.json
+- dvclive/evaluate_sinogram_denoising/6/metrics.json
+- dvclive/evaluate_sinogram_denoising/8/metrics.json
+- dvclive/evaluate_sinogram_denoising/10/metrics.json
+- dvclive/sinogram_denoising/metrics.json
 plots:
 - dvclive/pretraining/plots/metrics:
     x: step
@@ -177,4 +222,19 @@ plots:
     x: step
 - dvclive/evaluate/10/plots/metrics:
     x: step
+- dvclive/evaluate_sinogram_denoising/1/plots/metrics:
+    x: step
+- dvclive/evaluate_sinogram_denoising/2/plots/metrics:
+    x: step
+- dvclive/evaluate_sinogram_denoising/4/plots/metrics:
+    x: step
+- dvclive/evaluate_sinogram_denoising/6/plots/metrics:
+    x: step
+- dvclive/evaluate_sinogram_denoising/8/plots/metrics:
+    x: step
+- dvclive/evaluate_sinogram_denoising/10/plots/metrics:
+    x: step
 
+- dvclive/sinogram_denoising/plots/metrics:
+    x: step
+- dvclive/sinogram_denoising/plots/images

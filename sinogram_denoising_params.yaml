@@ -6,7 +6,7 @@ seed: 1
 
 hyperparameters:
   learning_rate: 5e-4
-  epochs: 1
+  epochs: 10
   batch_size: 8
   num_workers: 2
   downsampling: 1
@@ -34,6 +34,7 @@ model_parameters:
         kernel_type: gaussian
         sigma: 1
         connectivity: 1
+        distance_mode: surface
     sinogram_CNN:
       # CNN parameters
       kernel_size: 7

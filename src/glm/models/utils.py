@@ -83,6 +83,7 @@ def load_graph(
         connectivity: Optional[int] = None,
         kernel_type: Optional[str] = None,
         sigma: Optional[float] = None,
+        distance_mode: Optional[str] = None,
         ):
     if model_name == 'GLM':
         edges_kwargs = {} if connectivity is None else {'connectivity': connectivity}
@@ -91,6 +92,8 @@ def load_graph(
             weights_kwargs['kernel_type'] = kernel_type
         if sigma is not None:
             weights_kwargs['sigma'] = sigma
+        if distance_mode is not None:
+            weights_kwargs['distance_mode'] = distance_mode
         return create_graph_from_geometry(
             geometry = geometry,
             scheme   = 'GLM',

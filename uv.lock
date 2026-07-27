@@ -1861,7 +1861,7 @@ wheels = [
 [[package]]
 name = "odl"
 version = "1.0.1.dev0"
-source = { git = "https://github.com/Emvlt/odl?rev=GLM#42d750e0096ea99e666c7e95428300435d70da50" }
+source = { git = "https://github.com/Emvlt/odl?rev=GLM#8274e6c6d9353f292b628b62df5363204d50fb8d" }
 dependencies = [
     { name = "array-api-compat" },
     { name = "future" },

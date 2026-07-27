@@ -80,16 +80,6 @@ stages:
       nfiles: 30000
   pretraining:
     cmd: uv run python src/glm/pretrain.py
-    deps:
-    - path: /home/emilien/datasets/processed/2detect
-      hash: md5
-      md5: c9b5188af6c5685168104b496816ee67.dir
-      size: 182432320000
-      nfiles: 11500
-    - path: src/glm/pretrain.py
-      hash: md5
-      md5: 099f4ed8644e75c4d6aa34fa723f6b63
-      size: 8024
     params:
       params.yaml:
         pretrain_parameters:
@@ -99,6 +89,8 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
+            early_stopping_patience: 5
+            early_stopping_min_delta: 0.0
           active_model: sinogram_CNN
           models:
             GLM:
@@ -116,6 +108,7 @@ stages:
               kernel_dimension: 2
               padding: 3
               n_channels: 24
+        seed: 1
     outs:
     - path: dvclive/pretraining
       hash: md5
@@ -129,19 +122,10 @@ stages:
   training:
     cmd: uv run python src/glm/train.py
     deps:
-    - path: /home/emilien/datasets/processed/2detect
-      hash: md5
-      md5: c9b5188af6c5685168104b496816ee67.dir
-      size: 182432320000
-      nfiles: 11500
     - path: src/glm/saved_models/pretrained_sinogram_model.pt
       hash: md5
       md5: 1386fb1268459cb81dd26bee6dd6cb31
       size: 354115
-    - path: src/glm/train.py
-      hash: md5
-      md5: e1c7cc846720c435a1250cbf483d803d
-      size: 11526
     params:
       params.yaml:
         pretrain_parameters:
@@ -151,6 +135,8 @@ stages:
             batch_size: 8
             num_workers: 2
             downsampling: 1
+            early_stopping_patience: 5
+            early_stopping_min_delta: 0.0
           active_model: sinogram_CNN
           models:
             GLM:
@@ -168,6 +154,7 @@ stages:
               kernel_dimension: 2
               padding: 3
               n_channels: 24
+        seed: 1
         train_parameters:
           hyperparameters:
             learning_rate: 5e-05

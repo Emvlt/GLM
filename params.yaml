@@ -16,6 +16,8 @@ pretrain_parameters:
     batch_size: 8
     num_workers: 2
     downsampling: 1
+    early_stopping_patience: 5
+    early_stopping_min_delta: 0.0
   active_model: sinogram_CNN
   models:
     GLM:
