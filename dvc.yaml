@@ -237,4 +237,3 @@ plots:
 
 - dvclive/sinogram_denoising/plots/metrics:
     x: step
-- dvclive/sinogram_denoising/plots/images
