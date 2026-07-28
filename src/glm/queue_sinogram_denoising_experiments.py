@@ -29,7 +29,7 @@ from typing import Dict, List
 PARAMS_FILE = 'sinogram_denoising_params.yaml'
 TARGET = 'evaluate_sinogram_denoising'  # depends on `sinogram_denoising`, pulls it in automatically
 
-SEEDS: List[int] = [1, 2, 3, 4, 5]
+SEEDS: List[int] = [270720261, 270720262, 270720263, 270720264, 270720265]
 MODE_PAIRS: List[tuple] = [('mode1', 'mode2'), ('mode2', 'mode2'), ('mode3', 'mode2')]
 ACTIVE_MODELS: List[str] = ['sinogram_CNN', 'GLM']
 N_CHANNELS: List[int] = [16, 24]

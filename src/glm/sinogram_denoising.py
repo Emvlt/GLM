@@ -140,7 +140,6 @@ def training_loop(
                 live.next_step()
 
                 print(f'Current PSNR: {current_psnr.item():.6f}')
-                plot_image(infered_sinogram, 'test')
                 
                 plot_image_live(
                 data = infered_sinogram.view(batch_size, n_measurements, N_PIXELS),

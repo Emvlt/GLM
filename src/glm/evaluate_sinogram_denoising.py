@@ -73,6 +73,8 @@ def evaluate_loop(params_path: str = SINOGRAM_DENOISING_PARAMS_PATH, downsamplin
 
         input_sinogram = batch[f'preprocessed_sinogram_{input_mode}'].float().to(device)
         target_sinogram = batch[f'preprocessed_sinogram_{target_mode}'].float().to(device)
+        if angles_indices is not None:
+            target_sinogram = target_sinogram[:, :, angles_indices, :]
 
         _, infered_sinogram = forward_sinogram_model(
             model, input_sinogram,
