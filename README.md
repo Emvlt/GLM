@@ -57,7 +57,7 @@ The framework is designed to work with the [2DeteCT dataset](https://www.nature.
    ```
    
    This should print version information for all major dependencies:
-   - ODL (a non-official version [on my fork](https://github.com/Emvlt/odl/tree/GLM)): Geometry, Tomographic Operator, 2DeteCT dataloader, experimental code for Graph export and Surfaces handling
+   - ODL: Geometry, Tomographic Operator, 2DeteCT dataloader, experimental code for Graph export and Surfaces handling
    - ASTRA Toolbox: Tomographic Operator Backend
    - PyTorch: Deep Learning
    - PyTorch Geometric: Geometric Deep Learning
@@ -221,27 +221,8 @@ Trained models are saved in:
 - Run `uv sync` to ensure all dependencies are installed
 - Verify installation with `uv run python src/glm/install_test.py`
 
-## Citation
-
-If you use this code in your research, please cite:
-
-```
-@misc{valat2025improvinggeneralisationlearnedreconstruction,
-      title={Improving the Generalisation of Learned Reconstruction Frameworks}, 
-      author={Emilien Valat and Ozan Öktem},
-      year={2025},
-      eprint={2511.12730},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV},
-      url={https://arxiv.org/abs/2511.12730}, 
-}
-```
 
 ## License
 
 :key: Apache License 2.0
 
-## Contact
-
-For questions or issues, please open an issue on GitHub or contact:
-- Email: emilienvalat@gmail.com
