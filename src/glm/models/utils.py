@@ -94,6 +94,8 @@ def load_graph(
             weights_kwargs['sigma'] = sigma
         if distance_mode is not None:
             weights_kwargs['distance_mode'] = distance_mode
+        if connectivity is not None:
+            weights_kwargs['connectivity'] = connectivity
         return create_graph_from_geometry(
             geometry = geometry,
             scheme   = 'GLM',
