@@ -32,10 +32,7 @@ The framework is designed to work with the [2DeteCT dataset](https://www.nature.
 ### Step-by-step Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Emvlt/GLM
-   cd glm
-   ```
+
 
 2. **Install uv** (if not already installed)
    ```bash
